@@ -1,0 +1,6 @@
+.vscode/*
+build/*
+obj/*
+docs/config/Working Data/*
+docs/build/*
+x86.bat
