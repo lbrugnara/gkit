@@ -4,9 +4,9 @@
 #include <windows.h>
 #include <glad/glad.h>
 #include <GL/freeglut.h>
-#include "../core.h"
-#include "../windowintl.h"
-#include "../window.h"
+#include "../../core.h"
+#include "../../window.h"
+#include "../../internal/window.h"
 
 static FlHashtable created_windows;
 
@@ -60,7 +60,7 @@ void on_glut_reshape(int width, int height)
         gkwin->onResize[i](gkwin->width, gkwin->height);
 }
 
-bool gkit_internal_window_create(GKitWindow gkwin)
+bool gkit_internal_window_create(struct GKitWindow *gkwin)
 {
     if (!created_windows)
     {
@@ -93,7 +93,7 @@ bool gkit_internal_window_create(GKitWindow gkwin)
     return true;
 }
 
-bool gkit_internal_window_make_current(GKitWindow gkwin)
+bool gkit_internal_window_make_current(struct GKitWindow *gkwin)
 {
     glutSetWindow(*(int*)gkwin->raw);
     glutDisplayFunc(on_glut_display);
@@ -112,19 +112,35 @@ bool gkit_internal_window_make_current(GKitWindow gkwin)
     return true;
 }
 
-bool gkit_internal_window_alive(GKitWindow gkwin)
+void gkit_internal_window_render(struct GKitWindow *gkwindow)
+{
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LEQUAL);
+    glDepthRange(0.0f, 1.0f);
+    glClearDepth(1.0f);
+
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+bool gkit_internal_window_alive(struct GKitWindow *gkwin)
 {
     int glutId = glutGetWindow();
     return glutId && glutId == *(int*)gkwin->raw && gkwin->alive;
 }
 
-void gkit_internal_window_close(GKitWindow gkwin)
+void gkit_internal_window_close(struct GKitWindow *gkwin)
 {
     glutLeaveMainLoop();
     gkwin->alive = false;
 }
 
-void gkit_internal_window_swap_buffers(GKitWindow gkwin)
+void gkit_internal_window_swap_buffers(struct GKitWindow *gkwin)
 {
     int glutId = glutGetWindow();
 
@@ -134,7 +150,7 @@ void gkit_internal_window_swap_buffers(GKitWindow gkwin)
     glutSwapBuffers();
 }
 
-void gkit_internal_window_process_events(GKitWindow gkwin)
+void gkit_internal_window_process_events(struct GKitWindow *gkwin)
 {
     if (!gkwin->alive)
         return;
@@ -142,7 +158,7 @@ void gkit_internal_window_process_events(GKitWindow gkwin)
     glutMainLoopEvent();
 }
 
-void gkit_internal_window_wait_events(GKitWindow gkwin)
+void gkit_internal_window_wait_events(struct GKitWindow *gkwin)
 {
     if (!gkwin->alive)
         return;
@@ -155,7 +171,7 @@ void gkit_internal_window_wait_events(GKitWindow gkwin)
     }
 }
 
-void gkit_internal_window_destroy(GKitWindow gkwin)
+void gkit_internal_window_destroy(struct GKitWindow *gkwin)
 {
     glutDestroyWindow(*(int*)gkwin->raw);
     fl_hashtable_remove(created_windows, gkwin->raw, true);

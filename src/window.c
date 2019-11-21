@@ -1,135 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fllib.h>
-#include <glad/glad.h>
-#include "windowintl.h"
 #include "element.h"
 #include "window.h"
-
-/*
- * Function: gkit_internal_window_create
- *  The specific implementation hooks in to create the actual window and saves a reference to it
- *  in the *raw* member of a <GKitWindow>
- *
- * Parameters:
- *  window - <GKitWindow> instance owner of the *raw* member to be initialized
- *
- * Returns:
- *  bool - *true* on success. Otherwise *false*.
- *
- * See Also:
- *  <gkit_window_create>
- *  <gkit_internal_window_destroy>
- */
-extern bool gkit_internal_window_create(GKitWindow window);
-
-/*
- * Function: gkit_internal_window_make_current
- *  The specific implementation sets the <GKitWindow> as the current window in the calling thread
- *
- * Parameters:
- *  window - <GKitWindow> instance to set as the current window
- *
- * Returns:
- *  bool - *true* on success. Otherwise *false*.
- *
- * See Also:
- *  <gkit_window_make_current>
- */
-extern bool gkit_internal_window_make_current(GKitWindow window);
-
-
-/*
- * Function: gkit_internal_window_alive
- *  The specific implementation checks if the <GKitWindow> instance is still alive
- *
- * Parameters:
- *  window - <GKitWindow> instance to check if it is still alive
- *
- * Returns:
- *  bool - *true* if the <GKitWindow> is still alive. Otherwise *false*.
- *
- * See Also:
- *  <gkit_window_alive>
- */
-extern bool gkit_internal_window_alive(GKitWindow window);
-
-/*
- * Function: gkit_internal_window_close
- *  The specific implementation flags the <GKitWindow> to request a window close
- *
- * Parameters:
- *  window - <GKitWindow> to be closed
- *
- * Returns:
- *  void - This function does not return a value.
- * 
- * See Also:
- *  <gkit_window_close>
- */
-extern void gkit_internal_window_close(GKitWindow window);
-
-/*
- * Function: gkit_internal_window_swap_buffers
- *  The specific implementation triggers a swap buffer in the <GKitWindow> instance (if double buffering is enabled)
- *
- * Parameters:
- *  window - <GKitWindow> instance target of the double buffering
- *
- * Returns:
- *  void - This function does not return a value.
- * 
- * See Also:
- *  <gkit_window_swap_buffers>
- */
-extern void gkit_internal_window_swap_buffers(GKitWindow window);
-
-/*
- * Function: gkit_internal_window_process_events
- *  The specific implementation processes the pending events on the <GKitWindow> and returns immediately.
- *
- * Parameters:
- *  window - <GKitWindow> target of the pending events to be processed
- *
- * Returns:
- *  void - This function does not return a value.
- * 
- * See Also:
- *  <gkit_window_process_events>
- */
-extern void gkit_internal_window_process_events(GKitWindow window);
-
-/*
- * Function: gkit_internal_window_wait_events
- *  The specific implementation puts the calling thread to sleep, waiting for events on the <GKitWindow>.
- *
- * Parameters:
- *  window - <GKitWindow> that waits for incoming events.
- *
- * Returns:
- *  void - This function does not return a value.
- * 
- * See Also:
- *  <gkit_window_wait_events>
- */
-extern void gkit_internal_window_wait_events(GKitWindow window);
-
-/*
- * Function: gkit_internal_window_destroy
- *  The specific implementation cleanups the resources allocated with <gkit_internal_window_create>.
- *
- * Parameters:
- *  window - <GKitWindow> target window to be destroyed.
- *
- * Returns:
- *  void - This function does not return a value.
- * 
- * See Also:
- *  <gkit_window_destroy>
- *  <gkit_internal_window_create>
- */
-extern void gkit_internal_window_destroy(GKitWindow window);
-
+#include "internal/window.h"
 
 /*
  * Function: gkit_window_create
@@ -167,7 +41,7 @@ GKitWindow gkit_window_create(int width, int height, int x, int y, char* title)
         return NULL;
     }
 
-    gkwindow->root = gkit_element_create();
+    gkwindow->root = gkit_element_create(GKIT_ELEMENT_RECT);
 
     gkwindow->root->style.width = (struct GKitUnit){ .value.pixels = width, .unit = GKIT_UNIT_PIXEL };
     gkwindow->root->style.height = (struct GKitUnit){ .value.pixels = height, .unit = GKIT_UNIT_PIXEL };
@@ -205,18 +79,7 @@ bool gkit_window_make_current(GKitWindow gkwindow)
  */
 void gkit_window_render(GKitWindow gkwindow)
 {
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
-    glDepthFunc(GL_LEQUAL);
-    glDepthRange(0.0f, 1.0f);
-    glClearDepth(1.0f);
-
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gkit_internal_window_render(gkwindow);
 
     // Root always honors viewport width and height
     gkwindow->root->style.width.value.pixels = gkwindow->width;
@@ -224,7 +87,8 @@ void gkit_window_render(GKitWindow gkwindow)
     gkwindow->root->style.height.value.pixels = gkwindow->height;
     gkwindow->root->style.height.unit = GKIT_UNIT_PIXEL;
 
-    gkit_element_draw(gkwindow->root, (struct GKitViewport) { gkwindow->width, gkwindow->height });
+    gkit_element_draw(gkwindow->root, (struct GKitViewport) { gkwindow->width, gkwindow->height }, GKIT_ELEMENT_RECT);
+    gkit_element_draw(gkwindow->root, (struct GKitViewport) { gkwindow->width, gkwindow->height }, GKIT_ELEMENT_TEXT);
 
     gkit_window_swap_buffers(gkwindow);
 }

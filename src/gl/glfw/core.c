@@ -1,7 +1,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <fllib.h>
-#include "../core.h"
+#include "../../core.h"
 
 bool gkit_internal_init(int argc, char **argv)
 {

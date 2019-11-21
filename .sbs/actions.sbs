@@ -17,3 +17,13 @@ action clean-tests {
         `/bin/rm -fr tests/obj/ tests/build/`
     }
 }
+
+action copy-deps {
+    for win-cmd {
+        `copy dependencies\lib\freetype.dll build\${SBS_CONFIG_NAME}\freetype.dll`
+    }
+
+    for linux-bash {
+        `cp dependencies/lib/freetype.a build/${SBS_CONFIG_NAME}/freetype.a`
+    }
+}

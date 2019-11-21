@@ -18,8 +18,9 @@ compile gkit-glfw-objects {
     ],
     output_dir: "obj/",
     sources: [
-        "src/glfw/core.c",
-        "src/glfw/window.c",
+        "src/gl/glfw/core.c",
+        "src/gl/glfw/window.c",
+        "src/gl/[^/]+\.c$"
     ]
 }
 
@@ -34,8 +35,9 @@ compile gkit-glut-objects {
     ]
     output_dir: "obj/",
     sources: [
-        "src/glut/core.c",
-        "src/glut/window.c",
+        "src/gl/glut/core.c",
+        "src/gl/glut/window.c",
+        "src/gl/[^/]+\.c$"
     ]
 }
 
@@ -46,6 +48,9 @@ executable gkit-glfw {
         gkit-objects,
         gkit-glfw-objects
     ],
+    actions: {
+        after: [ copy-deps ]
+    }
 
     for win-cmd {
         objects: [ 
@@ -61,9 +66,6 @@ executable gkit-glfw {
             { name: "gdi32"     },
             { name: "shell32"   },
         ],
-        actions: {
-            after: [ `copy dependencies\lib\freetype.dll build\${SBS_CONFIG_NAME}\freetype.dll` ]
-        }
     }
 
     for linux-bash {
@@ -82,6 +84,9 @@ executable gkit-glut {
         gkit-objects,
         gkit-glut-objects
     ],
+    actions: {
+        after: [ copy-deps ]
+    }
 
     for win-cmd {
         objects: [ "../fllib/build/${SBS_CONFIG_NAME}/libfl.lib", "dependencies/lib/freeglut_static.lib", "dependencies/lib/freetype.lib" ],

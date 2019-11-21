@@ -3,12 +3,12 @@
 #include <fllib.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "../windowintl.h"
-#include "../window.h"
+#include "../../window.h"
+#include "../../internal/window.h"
 
 void on_glfw_window_resize(GLFWwindow *window, int width, int height)
 {
-    GKitWindow gkwindow = (GKitWindow)glfwGetWindowUserPointer(window);
+    struct GKitWindow *gkwindow = (struct GKitWindow*)glfwGetWindowUserPointer(window);
 
     gkwindow->width = width;
     gkwindow->height = height;
@@ -25,7 +25,7 @@ void on_glfw_window_resize(GLFWwindow *window, int width, int height)
         gkwindow->onResize[i](gkwindow->width, gkwindow->height);
 }
 
-bool gkit_internal_window_create(GKitWindow gkwindow)
+bool gkit_internal_window_create(struct GKitWindow *gkwindow)
 {
     gkwindow->raw = glfwCreateWindow(gkwindow->width, gkwindow->height, gkwindow->title, NULL, NULL);;
 
@@ -40,7 +40,7 @@ bool gkit_internal_window_create(GKitWindow gkwindow)
     return true;
 }
 
-bool gkit_internal_window_make_current(GKitWindow gkwindow)
+bool gkit_internal_window_make_current(struct GKitWindow *gkwindow)
 {
     glfwMakeContextCurrent((GLFWwindow*)gkwindow->raw);
     glfwSetFramebufferSizeCallback((GLFWwindow*)gkwindow->raw, on_glfw_window_resize);
@@ -56,32 +56,48 @@ bool gkit_internal_window_make_current(GKitWindow gkwindow)
     return true;
 }
 
-bool gkit_internal_window_alive(GKitWindow gkwindow)
+void gkit_internal_window_render(struct GKitWindow *gkwindow)
+{
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
+    glDepthFunc(GL_LEQUAL);
+    glDepthRange(0.0f, 1.0f);
+    glClearDepth(1.0f);
+
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+bool gkit_internal_window_alive(struct GKitWindow *gkwindow)
 {
     return !glfwWindowShouldClose((GLFWwindow*)gkwindow->raw);
 }
 
-void gkit_internal_window_close(GKitWindow gkwindow)
+void gkit_internal_window_close(struct GKitWindow *gkwindow)
 {
     glfwSetWindowShouldClose((GLFWwindow*)gkwindow->raw, true);
 }
 
-void gkit_internal_window_swap_buffers(GKitWindow gkwindow)
+void gkit_internal_window_swap_buffers(struct GKitWindow *gkwindow)
 {
     glfwSwapBuffers((GLFWwindow*)gkwindow->raw);
 }
 
-void gkit_internal_window_process_events(GKitWindow gkwindow)
+void gkit_internal_window_process_events(struct GKitWindow *gkwindow)
 {
     glfwPollEvents();
 }
 
-void gkit_internal_window_wait_events(GKitWindow gkwindow)
+void gkit_internal_window_wait_events(struct GKitWindow *gkwindow)
 {
     glfwWaitEvents();
 }
 
-void gkit_internal_window_destroy(GKitWindow gkwindow)
+void gkit_internal_window_destroy(struct GKitWindow *gkwindow)
 {
     glfwDestroyWindow((GLFWwindow*)gkwindow->raw);
 }

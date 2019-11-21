@@ -1,80 +1,35 @@
-#include <glad/glad.h>
 #include <fllib.h>
 #include "shader.h"
+#include "internal/shader.h"
 
-static const char *DEFAULT_VERTEX_SHADER =
-    "#version 330 core"                                     "\n"
-    "layout (location = 0) in vec3 aPos;"                   "\n"
-    "void main()"                                           "\n"
-    "{"                                                     "\n"
-    "    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);"  "\n"
-    "}"                                                     "\n"
-;
-
-static const char *DEFAULT_FRAGMENT_SHADER = 
-    "#version 330 core"             "\n"
-    "out vec4 FragColor;"           "\n"
-    "uniform vec4 color; "          "\n"
-    "void main()"                   "\n"
-    "{"                             "\n"
-    "    FragColor = color;"        "\n"
-    "}"                             "\n"
-;
-
-unsigned int gkit_shader_new(const char *vs_source, const char *fs_source)
+GKitShader gkit_shader_create(const char *vs_source, const char *fs_source)
 {
-    // Compile the vertex shader
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vs_source, NULL);
-    glCompileShader(vertexShader);
-    
-    int  success;
-    char vlog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if(!success)
+    struct GKitShader *shader = fl_malloc(sizeof(struct GKitShader));
+
+    if (!gkit_internal_shader_create(shader, vs_source, fs_source))
     {
-        glGetShaderInfoLog(vertexShader, 512, NULL, vlog);
-        fprintf(stdout, "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n%s\n", vlog);
-        return false;
+        fl_free(shader);
+        return NULL;
     }
 
-    // Compile the fragment shader
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fs_source, NULL);
-    glCompileShader(fragmentShader);
-
-    char flog[512];
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if(!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, flog);
-        fprintf(stdout, "ERROR::FRAGMENT::VERTEX::COMPILATION_FAILED\n%s\n", flog);
-        return false;
-    }
-
-    // Create the shader program
-    unsigned int shaderId = glCreateProgram();
-    glAttachShader(shaderId, vertexShader);
-    glAttachShader(shaderId, fragmentShader);
-    glLinkProgram(shaderId);
-
-    char plog[512];
-    glGetProgramiv(shaderId, GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shaderId, 512, NULL, plog);
-        fprintf(stdout, "ERROR::SHADER::PROGRAM::LINKING_FAILED\n%s\n", plog);
-        return false;
-    }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    return shaderId;
+    return shader;
 }
 
-unsigned int gkit_shader_new_default(void)
+GKitShader gkit_shader_create_default(void)
 {
-    return gkit_shader_new(DEFAULT_VERTEX_SHADER, DEFAULT_FRAGMENT_SHADER);
+    struct GKitShader *shader = fl_malloc(sizeof(struct GKitShader));
+
+    if (!gkit_internal_shader_create_default(shader))
+    {
+        fl_free(shader);
+        return NULL;
+    }
+
+    return shader;
+}
+
+void gkit_shader_destroy(GKitShader shader)
+{
+    gkit_internal_shader_destroy(shader);
+    fl_free(shader);
 }
