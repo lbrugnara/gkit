@@ -12,7 +12,15 @@ static FlHashtable created_windows;
 
 void clean_created_windows(void)
 {
-    fl_hashtable_delete(created_windows);
+    fl_hashtable_free(created_windows);
+}
+
+void free_glut_id(struct GKitWindow *gkwin)
+{
+    if (!gkwin || !gkwin->raw)
+        return;
+
+    fl_free(gkwin->raw);
 }
 
 void on_glut_display(void)
@@ -59,8 +67,9 @@ bool gkit_internal_window_create(GKitWindow gkwin)
         created_windows = fl_hashtable_new_args((struct FlHashtableArgs) {
             .hash_function = fl_hashtable_hash_int,
             .key_comparer = fl_container_equals_int,
-            .key_cleaner = fl_container_cleaner_pointer,
-            .key_writer = fl_container_writer_int
+            .key_cleaner = fl_container_cleaner_pointer,            
+            .key_allocator = fl_container_allocator_int,
+            .value_cleaner = (FlContainerCleanupFunction)free_glut_id
         });
 
         gkit_at_exit(clean_created_windows);
@@ -149,6 +158,5 @@ void gkit_internal_window_wait_events(GKitWindow gkwin)
 void gkit_internal_window_destroy(GKitWindow gkwin)
 {
     glutDestroyWindow(*(int*)gkwin->raw);
-    fl_hashtable_remove(created_windows, gkwin->raw);
-    fl_free(gkwin->raw);
+    fl_hashtable_remove(created_windows, gkwin->raw, true);
 }

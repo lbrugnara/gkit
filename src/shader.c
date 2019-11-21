@@ -2,31 +2,31 @@
 #include <fllib.h>
 #include "shader.h"
 
-const char *DEFAULT_VERTEX_SHADER =
-    "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\n"
+static const char *DEFAULT_VERTEX_SHADER =
+    "#version 330 core"                                     "\n"
+    "layout (location = 0) in vec3 aPos;"                   "\n"
+    "void main()"                                           "\n"
+    "{"                                                     "\n"
+    "    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);"  "\n"
+    "}"                                                     "\n"
 ;
 
-const char *DEFAULT_FRAGMENT_SHADER = 
-    "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "uniform vec4 color; \n"
-    "void main()\n"
-    "{\n"
-    "    FragColor = color;\n"
-    "} \n"
+static const char *DEFAULT_FRAGMENT_SHADER = 
+    "#version 330 core"             "\n"
+    "out vec4 FragColor;"           "\n"
+    "uniform vec4 color; "          "\n"
+    "void main()"                   "\n"
+    "{"                             "\n"
+    "    FragColor = color;"        "\n"
+    "}"                             "\n"
 ;
 
-unsigned int gkit_shader_new(void)
+unsigned int gkit_shader_new(const char *vs_source, const char *fs_source)
 {
     // Compile the vertex shader
     unsigned int vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &DEFAULT_VERTEX_SHADER, NULL);
+    glShaderSource(vertexShader, 1, &vs_source, NULL);
     glCompileShader(vertexShader);
     
     int  success;
@@ -42,7 +42,7 @@ unsigned int gkit_shader_new(void)
     // Compile the fragment shader
     unsigned int fragmentShader;
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &DEFAULT_FRAGMENT_SHADER, NULL);
+    glShaderSource(fragmentShader, 1, &fs_source, NULL);
     glCompileShader(fragmentShader);
 
     char flog[512];
@@ -72,4 +72,9 @@ unsigned int gkit_shader_new(void)
     glDeleteShader(fragmentShader);
 
     return shaderId;
+}
+
+unsigned int gkit_shader_new_default(void)
+{
+    return gkit_shader_new(DEFAULT_VERTEX_SHADER, DEFAULT_FRAGMENT_SHADER);
 }

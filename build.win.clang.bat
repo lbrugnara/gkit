@@ -6,12 +6,12 @@ set WINDOW_HANDLING_LIB=""
 
 if "%~1"=="glfw" (
     set WINDOW_HANDLING="glfw"
-    set WINDOW_HANDLING_LIB=deps\lib\glfw3.lib
+    set WINDOW_HANDLING_LIB=dependencies\lib\glfw3.lib
 )
 
 if "%~1"=="glut" (
     set WINDOW_HANDLING="glut"
-    set WINDOW_HANDLING_LIB=deps\lib\freeglut_static.lib
+    set WINDOW_HANDLING_LIB=dependencies\lib\freeglut_static.lib
 )
 
 if %WINDOW_HANDLING%=="" (
@@ -27,7 +27,7 @@ md .\obj\debug\%WINDOW_HANDLING%
 md .\build\debug
 
 set FLAGS=-I"../fllib/include" ^
-            -I"./deps/include" ^
+            -I"./dependencies/include" ^
             -Wall ^
             -Wextra ^
             -Wno-unused-parameter ^
@@ -44,7 +44,7 @@ if "%~1"=="glut" (
     set FLAGS=%FLAGS% -DFREEGLUT_STATIC=1 -DFREEGLUT_LIB_PRAGMAS=0
 )
 
-clang.exe %FLAGS% -c .\deps\glad.c -o obj\debug\glad.o
+clang.exe %FLAGS% -c .\dependencies\glad.c -o obj\debug\glad.o
 clang.exe %FLAGS% -c .\src\core.c -o obj\debug\core.o
 clang.exe %FLAGS% -c .\src\window.c -o obj\debug\window.o
 clang.exe %FLAGS% -c .\src\shader.c -o obj\debug\shader.o
@@ -76,7 +76,7 @@ lld-link.exe ^
     /LIBPATH:D:\dev\LLVM\x86\lib\clang\8.0.0\lib\windows ^
     /NOLOGO ^
     /DEBUG:FULL ^
-    deps\lib\fl.lib ^
+    dependencies\lib\fl.lib ^
     %WINDOW_HANDLING_LIB% ^
     obj\debug\glad.o ^
     obj\debug\core.o ^

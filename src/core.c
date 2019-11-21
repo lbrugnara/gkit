@@ -113,7 +113,7 @@ void gkit_exit(void)
             ((GKitExitFunction)node->value)();
             node = node->next;
         }
-        fl_list_delete(exit_functions);
+        fl_list_free(exit_functions);
     }
 
     gkit_internal_exit();

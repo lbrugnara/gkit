@@ -1,0 +1,105 @@
+compile gkit-objects {
+    includes: [
+        "../fllib/include",
+        "dependencies/include"
+    ],
+    output_dir: "obj/",
+    sources: [
+        "dependencies\glad.c",
+        # Add all the C files in the 'src' folder
+        "src/[^/]+\.c$"
+    ]
+}
+
+compile gkit-glfw-objects {
+    includes: [
+        "../fllib/include",
+        "dependencies/include"
+    ],
+    output_dir: "obj/",
+    sources: [
+        "src/glfw/core.c",
+        "src/glfw/window.c",
+    ]
+}
+
+compile gkit-glut-objects {
+    includes: [
+        "../fllib/include",
+        "dependencies/include"
+    ],
+    defines: [
+        "FREEGLUT_STATIC=1",
+        "FREEGLUT_LIB_PRAGMAS=0",
+    ]
+    output_dir: "obj/",
+    sources: [
+        "src/glut/core.c",
+        "src/glut/window.c",
+    ]
+}
+
+executable gkit-glfw {
+    output_name: "gkit-glfw",
+    output_dir: "build/",
+    objects: [
+        gkit-objects,
+        gkit-glfw-objects
+    ],
+
+    for win-cmd {
+        objects: [ 
+            "../fllib/build/${SBS_CONFIG_NAME}/libfl.lib",
+            "dependencies/lib/glfw3.lib",
+            "dependencies/lib/freetype.lib" 
+        ],
+        libraries: [
+            { name: "libcmt"    },
+            { name: "opengl32"  },
+            { name: "kernel32"  },
+            { name: "user32"    },
+            { name: "gdi32"     },
+            { name: "shell32"   },
+        ],
+        actions: {
+            after: [ `copy dependencies\lib\freetype.dll build\${SBS_CONFIG_NAME}\freetype.dll` ]
+        }
+    }
+
+    for linux-bash {
+        objects: [ "../fllib/build/${SBS_CONFIG_NAME}/libfl.a" ],
+        libraries: [
+            { name: "m"         },
+            { name: "pthread"   }
+        ]
+    }
+}
+
+executable gkit-glut {
+    output_name: "gkit-glut",
+    output_dir: "build/",
+    objects: [
+        gkit-objects,
+        gkit-glut-objects
+    ],
+
+    for win-cmd {
+        objects: [ "../fllib/build/${SBS_CONFIG_NAME}/libfl.lib", "dependencies/lib/freeglut_static.lib", "dependencies/lib/freetype.lib" ],
+        libraries: [
+            { name: "libcmt"    },
+            { name: "opengl32"  },
+            { name: "kernel32"  },
+            { name: "user32"    },
+            { name: "gdi32"     },
+            { name: "shell32"   },
+        ]
+    }
+
+    for linux-bash {
+        objects: [ "../fllib/build/${SBS_CONFIG_NAME}/libfl.a" ],
+        libraries: [
+            { name: "m"         },
+            { name: "pthread"   }
+        ]
+    }
+}

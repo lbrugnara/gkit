@@ -313,7 +313,7 @@ bool gkit_element_draw(GKitElement element, struct GKitViewport viewport)
 
     if (!gl_element_is_initialized(glElement))
     {
-        glElement->shader = gkit_shader_new();
+        glElement->shader = gkit_shader_new_default();
 
         glGenVertexArrays(1, &glElement->vao);
         glBindVertexArray(glElement->vao);
@@ -409,7 +409,7 @@ void gkit_element_destroy(GKitElement element)
             gkit_element_destroy((GKitElement)node->value);
             node = node->next;
         }
-        fl_list_delete(element->children);
+        fl_list_free(element->children);
     }
 
     glDeleteVertexArrays(1, &glElement->vao);

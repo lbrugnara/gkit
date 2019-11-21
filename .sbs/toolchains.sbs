@@ -1,0 +1,50 @@
+toolchain clang {
+
+    compiler: {
+        bin: "clang",
+        include_dir_flag: "-I",
+        define_flag: "-D"
+    }    
+
+    for win-cmd {
+        archiver: {
+            bin: "llvm-lib.exe"
+        },
+        linker: {
+            bin: "link.exe",
+            lib_dir_flag: "/LIBPATH:",
+            lib_flag: "/DEFAULTLIB:"
+        }
+    },
+
+    for linux-bash {
+        archiver: {
+            bin: "ar"
+        },
+        linker: {
+            bin: "lld-link",
+            lib_dir_flag: "-L",
+            lib_flag: "-l"
+        }
+    }
+}
+
+toolchain gcc {
+
+    compiler: {
+        bin: "gcc",
+        include_dir_flag: "-I",
+        define_flag: "-D"
+    }    
+
+    for linux-bash {
+        archiver: {
+            bin: "ar"
+        },
+        linker: {
+            bin: "gcc",
+            lib_dir_flag: "-L",
+            lib_flag: "-l"
+        }
+    }
+}

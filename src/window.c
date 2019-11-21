@@ -294,7 +294,7 @@ void* gkit_window_raw(GKitWindow gkwindow)
 void gkit_window_destroy(GKitWindow gkwindow)
 {
     gkit_internal_window_destroy(gkwindow);
-    fl_cstring_delete(gkwindow->title);
+    fl_cstring_free(gkwindow->title);
     gkit_element_destroy(gkwindow->root);
     free(gkwindow->onResize);
     free(gkwindow->onRender);
