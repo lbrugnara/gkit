@@ -8,6 +8,8 @@ compile gkit-objects {
         "dependencies\glad.c",
         # Add all the C files in the 'src' folder
         "src/[^/]+\.c$"
+        # Add all the C files in the 'src/gkml' folder
+        "src/gkml/.+\.c$"
     ]
 }
 

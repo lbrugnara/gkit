@@ -17,6 +17,8 @@ struct GKitCharacter {
 struct GKitFont {
     // FIXME: BY now we only support ASCII
     struct GKitCharacter alphabet[128];
+    unsigned int gt_height;
+    int gt_top;
 };
 
 bool gkit_internal_font_load_alphabet(struct GKitFont *font, FT_Face face);

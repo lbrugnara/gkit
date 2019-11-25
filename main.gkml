@@ -1,0 +1,91 @@
+Root {
+    Style {
+        width: 100%
+        height: 100%
+        top: 0
+        left: 0
+        color: #DADADA
+        z-index: 0
+    } 
+
+    Rect {
+        Attributes {
+            id: "element1"
+        }
+        Style {
+            width: 50%
+            height: 50%
+            top: 25px
+            left: 25px
+            color: #0000D2
+            z-index: 0
+        }        
+    }
+
+    Rect {
+        Attributes {
+            id: "element5"
+        }
+        Style {
+            width: 30%
+            height: 10%
+            top: 25px
+            left: 25px
+            color: #FF0000
+            z-index: 0x7FF
+        }
+        Text {
+            Attributes {
+                id: "alphabet"
+            }
+            Style {
+                color: #3C96FF
+                width: 100%
+                height: 100%
+            }
+            Content {
+                "Hello  world!"
+            }
+        }
+    }
+
+    Rect {
+        Attributes {
+            id: "element2"
+        }
+
+        Style {
+            width: 400px
+            height: 200px
+            top: 25px
+            left: 25px
+            color: #00D200
+            z-index: 0
+        }
+
+        Rect {
+            Attributes {
+                id: "element3"
+            }
+
+            Style {
+                width: 50%
+                height: 50%
+                color: #D200D2
+                z-index: 0
+            }
+
+            Rect {
+                Attributes {
+                    id: "element4"
+                }
+                Style {
+                    width: 50%
+                    height: 50%
+                    color: #D2D200
+                    z-index: 0
+                }
+            }
+        }
+    }
+}

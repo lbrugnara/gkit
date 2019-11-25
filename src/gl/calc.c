@@ -1,7 +1,7 @@
 #include "../internal/element.h"
 
 /*
- * Function: viewport_calc_element_width_px
+ * Function: gkit_calc_element_width_px
  *  Returns the <GKitElement>'s width in pixels. If the unit of measure is PIXEL, it
  *  returns the value associated to it. In case it is PERCENTAGE, it figures out the width
  *  based on the ancestors and/or the viewport.
@@ -14,7 +14,7 @@
  *  int - <GKitElement>'s width in pixels
  *
  */
-int viewport_calc_element_width_px(struct GKitViewport *viewport, struct GKitElement *element)
+int gkit_calc_element_width_px(struct GKitViewport *viewport, struct GKitElement *element)
 {
     if (element->style.width.unit == GKIT_UNIT_PIXEL)
         return element->style.width.value.pixels;
@@ -23,11 +23,11 @@ int viewport_calc_element_width_px(struct GKitViewport *viewport, struct GKitEle
     if (!element->parent)
         return viewport->width * element->style.width.value.percentage / 100;
 
-    return viewport_calc_element_width_px(viewport, element->parent) * element->style.width.value.percentage / 100;
+    return gkit_calc_element_width_px(viewport, element->parent) * element->style.width.value.percentage / 100;
 }
 
 /*
- * Function: viewport_calc_element_height_px
+ * Function: gkit_calc_element_height_px
  *  Returns the <GKitElement>'s height in pixels. If the unit of measure is PIXEL, it
  *  returns the value associated to it. In case it is PERCENTAGE, it figures out the height
  *  based on the ancestors and/or the viewport.
@@ -40,7 +40,7 @@ int viewport_calc_element_width_px(struct GKitViewport *viewport, struct GKitEle
  *  int - <GKitElement>'s height in pixels
  *
  */
-int viewport_calc_element_height_px(struct GKitViewport *viewport, struct GKitElement *element)
+int gkit_calc_element_height_px(struct GKitViewport *viewport, struct GKitElement *element)
 {
     if (element->style.height.unit == GKIT_UNIT_PIXEL)
         return element->style.height.value.pixels;
@@ -49,11 +49,11 @@ int viewport_calc_element_height_px(struct GKitViewport *viewport, struct GKitEl
     if (!element->parent)
         return viewport->height * element->style.height.value.percentage / 100;
 
-    return viewport_calc_element_height_px(viewport, element->parent) * element->style.height.value.percentage / 100;
+    return gkit_calc_element_height_px(viewport, element->parent) * element->style.height.value.percentage / 100;
 }
 
 /*
- * Function: viewport_calc_element_left_px
+ * Function: gkit_calc_element_left_px
  *  Returns the <GKitElement>'s left offset in pixels. If the unit of measure is PIXEL, it
  *  returns the value associated to it along with the ancestors' left offset. In case it is PERCENTAGE,
  *  it figures out the left offset based on the ancestors and/or the viewport.
@@ -66,25 +66,27 @@ int viewport_calc_element_height_px(struct GKitViewport *viewport, struct GKitEl
  *  int - <GKitElement>'s left offset in pixels
  *
  */
-int viewport_calc_element_left_px(struct GKitViewport *viewport, struct GKitElement *element)
+int gkit_calc_element_left_px(struct GKitViewport *viewport, struct GKitElement *element)
 {
     if (element->style.left.unit == GKIT_UNIT_PIXEL)
     {
         if (!element->parent)
             return element->style.left.value.pixels;
 
-        return viewport_calc_element_left_px(viewport, element->parent) + element->style.left.value.pixels;
+        return gkit_calc_element_left_px(viewport, element->parent) + element->style.left.value.pixels;
     }
 
     // GKIT_UNIT_PERCENTAGE
     if (!element->parent)
         return viewport->width * element->style.left.value.percentage / 100;
 
-    return viewport_calc_element_width_px(viewport, element->parent) * element->style.left.value.percentage / 100;
+    float calculated_left = gkit_calc_element_width_px(viewport, element->parent) * element->style.left.value.percentage / 100;
+
+    return gkit_calc_element_left_px(viewport, element->parent) + calculated_left;
 }
 
 
-int viewport_calc_element_right_px(struct GKitViewport *viewport, struct GKitElement *element)
+int gkit_calc_element_right_px(struct GKitViewport *viewport, struct GKitElement *element)
 {
     //            Viewport's width
     //      .---------------------------.
@@ -107,13 +109,13 @@ int viewport_calc_element_right_px(struct GKitViewport *viewport, struct GKitEle
     //
     // viewport->width - (element->left + element->width) == element->right
     //
-    int right_offset = viewport_calc_element_left_px(viewport, element) + viewport_calc_element_width_px(viewport, element);
+    return gkit_calc_element_left_px(viewport, element) + gkit_calc_element_width_px(viewport, element);
 
-    return viewport->width - right_offset;
+    //return viewport->width - right_offset;
 }
 
 /*
- * Function: viewport_calc_element_top_px
+ * Function: gkit_calc_element_top_px
  *  Returns the <GKitElement>'s top offset in pixels. If the unit of measure is PIXEL, it
  *  returns the value associated to it along with the ancestors' top offset. In case it is PERCENTAGE,
  *  it figures out the top offset based on the ancestors and/or the viewport.
@@ -126,31 +128,33 @@ int viewport_calc_element_right_px(struct GKitViewport *viewport, struct GKitEle
  *  int - <GKitElement>'s top offset in pixels
  *
  */
-int viewport_calc_element_top_px(struct GKitViewport *viewport, struct GKitElement *element)
+int gkit_calc_element_top_px(struct GKitViewport *viewport, struct GKitElement *element)
 {
     if (element->style.top.unit == GKIT_UNIT_PIXEL)
     {
         if (!element->parent)
             return element->style.top.value.pixels;
 
-        return viewport_calc_element_top_px(viewport, element->parent) + element->style.top.value.pixels;
+        return gkit_calc_element_top_px(viewport, element->parent) + element->style.top.value.pixels;
     }
 
     // GKIT_UNIT_PERCENTAGE
     if (!element->parent)
         return viewport->height * element->style.top.value.percentage / 100;
 
-    return viewport_calc_element_height_px(viewport, element->parent) * element->style.top.value.percentage / 100;
+    float calculated_top = gkit_calc_element_height_px(viewport, element->parent) * element->style.top.value.percentage / 100;
+
+    return gkit_calc_element_top_px(viewport, element->parent) + calculated_top;
 }
 
-int viewport_calc_element_bottom_px(struct GKitViewport *viewport, struct GKitElement *element)
+int gkit_calc_element_bottom_px(struct GKitViewport *viewport, struct GKitElement *element)
 {
     // We first get the bottom offset using the top and height:
     //
     //                 .--   +------------------------------------------------------------+
     //                 |     |                                                            |
-    //                 |     |             .--  +-----------+    <--- Element's top       |
-    //     Viewport's  |     |   Element's |    |           |                             |
+    //                 |     |             .--  +-----------+    <--- Element top         |
+    //      Viewport   |     |    Element  |    |           |                             |
     //       height    |     |    height   |    |           |                             |
     //                 |     |             `--  +-----------+                             |
     //                 |     |                                                            |
@@ -158,13 +162,11 @@ int viewport_calc_element_bottom_px(struct GKitViewport *viewport, struct GKitEl
     //
     // viewport->height - (element->top + element->height) == element->bottom
     //
-    int bottom_offset = viewport_calc_element_top_px(viewport, element) + viewport_calc_element_height_px(viewport, element);
-
-    return viewport->height - bottom_offset;
+    return gkit_calc_element_top_px(viewport, element) + gkit_calc_element_height_px(viewport, element);
 }
 
 /*
- * Function: viewport_calc_element_left_ndc
+ * Function: gkit_calc_element_left_ndc
  *  Returns the <GKitElement>'s left-most vertex position in NDC (x-axis).
  *
  * Parameters:
@@ -175,15 +177,15 @@ int viewport_calc_element_bottom_px(struct GKitViewport *viewport, struct GKitEl
  *  int - <GKitElement>'s left position in NDC (x-axis)
  *
  */
-float viewport_calc_element_left_ndc(struct GKitViewport *viewport, struct GKitElement *element)
+float gkit_calc_element_left_ndc(struct GKitViewport *viewport, struct GKitElement *element)
 {
-    float left = viewport_calc_element_left_px(viewport, element);
+    float left = gkit_calc_element_left_px(viewport, element);
 
     return (2.0f *  left) / viewport->width - 1.0f;
 }
 
 /*
- * Function: viewport_calc_element_right_ndc
+ * Function: gkit_calc_element_right_ndc
  *  Returns the <GKitElement>'s right-most vertex position in NDC (x-axis).
  *
  * Parameters:
@@ -194,15 +196,15 @@ float viewport_calc_element_left_ndc(struct GKitViewport *viewport, struct GKitE
  *  int - <GKitElement>'s right position in NDC (x-axis)
  *
  */
-float viewport_calc_element_right_ndc(struct GKitViewport *viewport, struct GKitElement *element)
+float gkit_calc_element_right_ndc(struct GKitViewport *viewport, struct GKitElement *element)
 {
-    int right_offset = viewport_calc_element_left_px(viewport, element) + viewport_calc_element_width_px(viewport, element);
+    int right_offset = gkit_calc_element_left_px(viewport, element) + gkit_calc_element_width_px(viewport, element);
 
     return (2.0f *  right_offset) / viewport->width - 1.0f;
 }
 
 /*
- * Function: viewport_calc_element_top_ndc
+ * Function: gkit_calc_element_top_ndc
  *  Returns the <GKitElement>'s top-most vertex position in NDC (x-axis).
  *
  * Parameters:
@@ -213,15 +215,15 @@ float viewport_calc_element_right_ndc(struct GKitViewport *viewport, struct GKit
  *  int - <GKitElement>'s top position in NDC (x-axis)
  *
  */
-float viewport_calc_element_top_ndc(struct GKitViewport *viewport, struct GKitElement *element)
+float gkit_calc_element_top_ndc(struct GKitViewport *viewport, struct GKitElement *element)
 {
-    int top = viewport_calc_element_top_px(viewport, element);
+    int top = gkit_calc_element_top_px(viewport, element);
 
     return (-2.0f *  top) / viewport->height + 1.0f;
 }
 
 /*
- * Function: viewport_calc_element_bottom_ndc
+ * Function: gkit_calc_element_bottom_ndc
  *  Returns the <GKitElement>'s bottom-most vertex position in NDC (x-axis).
  *
  * Parameters:
@@ -232,15 +234,15 @@ float viewport_calc_element_top_ndc(struct GKitViewport *viewport, struct GKitEl
  *  int - <GKitElement>'s bottom position in NDC (x-axis)
  *
  */
-float viewport_calc_element_bottom_ndc(struct GKitViewport *viewport, struct GKitElement *element)
+float gkit_calc_element_bottom_ndc(struct GKitViewport *viewport, struct GKitElement *element)
 {
-    int bottom_offset = viewport_calc_element_top_px(viewport, element) + viewport_calc_element_height_px(viewport, element);
+    int bottom_offset = gkit_calc_element_top_px(viewport, element) + gkit_calc_element_height_px(viewport, element);
 
     return (-2.0f *  bottom_offset) / viewport->height + 1.0f;
 }
 
 /*
- * Function: viewport_calc_element_z_index_ndc
+ * Function: gkit_calc_element_z_index_ndc
  *  Returns the <GKitElement>'s z-index vertex position in NDC (x-axis).
  *
  * Parameters:
@@ -251,26 +253,26 @@ float viewport_calc_element_bottom_ndc(struct GKitViewport *viewport, struct GKi
  *  int - <GKitElement>'s z-index in NDC (x-axis)
  *
  */
-float viewport_calc_element_z_index_ndc(struct GKitViewport *viewport, struct GKitElement *element)
+float gkit_calc_element_z_index_ndc(struct GKitViewport *viewport, struct GKitElement *element)
 {
     float zIndexf = ((float)element->style.zIndex - GKIT_Z_INDEX_MIN) / (GKIT_Z_INDEX_MAX - GKIT_Z_INDEX_MIN);
 
     zIndexf = (zIndexf * (-1.0f - 1.0f)) + 1.0f;
 
     float pzi = element->parent
-                    ? viewport_calc_element_z_index_ndc(viewport, element->parent)
+                    ? gkit_calc_element_z_index_ndc(viewport, element->parent)
                     : 1.0f; // Farther distance
 
     // Minimum depth is parent's depth
     return pzi < zIndexf ? pzi : zIndexf;
 }
 
-float viewport_calc_x_value_ndc(struct GKitViewport *viewport, unsigned int value)
+float gkit_calc_x_value_ndc(struct GKitViewport *viewport, unsigned int value)
 {
     return (2.0f *  value) / viewport->width - 1.0f;
 }
 
-float viewport_calc_y_value_ndc(struct GKitViewport *viewport, unsigned int value)
+float gkit_calc_y_value_ndc(struct GKitViewport *viewport, unsigned int value)
 {
-    return (2.0f *  value) / viewport->height - 1.0f;
+    return (-2.0f *  value) / viewport->height + 1.0f;
 }

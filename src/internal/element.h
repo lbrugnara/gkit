@@ -15,11 +15,6 @@
  * Type: struct GKitViewport
  *  Represents the window viewport's size in pixels
  * 
- * ===== C ===== 
- *  struct GKitViewport  {
- *      unsigned int width;
- *      unsigned int height;
- *  };
  */
 struct GKitViewport  {
     unsigned int width;
@@ -30,14 +25,6 @@ struct GKitViewport  {
  * Type: struct GKitColor
  *  Represents a RGBA color
  *
- * ===== C ===== 
- *  struct GKitColor {
- *      float alpha;
- *      unsigned char red;
- *      unsigned char green;
- *      unsigned char blue;
- *  };
- * 
  */
 struct GKitColor {
     float alpha;
@@ -47,30 +34,17 @@ struct GKitColor {
 };
 
 /*
- * Type: struct GKitUnit
+ * Type: struct GKitValue
  *  Represents a unit of measurement and its associated value:
  * 
- * ===== C =====
- *  // If the *unit* member is PIXEL it is safe to access the *value.pixels* members. When the
- *  // *unit* member is PERCENTAGE, the member *value.percentage* can be safely accessed.
- *  struct GKitUnit {
- *      union {
- *          float percentage;
- *          unsigned int pixels;
- *      } value;
- *      enum {
- *          GKIT_UNIT_PIXEL,
- *          GKIT_UNIT_PERCENTAGE
- *      } unit;
- *  };
- * 
  */
-struct GKitUnit {
+struct GKitValue {
     union {
         float percentage;
         unsigned int pixels;
     } value;
     enum {
+        GKIT_UNIT_NONE,
         GKIT_UNIT_PIXEL,
         GKIT_UNIT_PERCENTAGE
     } unit;
@@ -80,23 +54,13 @@ struct GKitUnit {
  * Type: struct GKitStyle
  *  Represents the style of a <GKitElement>
  *
- * ===== C =====
- *  struct GKitStyle {
- *      struct GKitColor color;
- *      struct GKitUnit top;
- *      struct GKitUnit left;
- *      struct GKitUnit width;
- *      struct GKitUnit height;
- *      int zIndex;
- *  };
- *
  */
 struct GKitStyle {
     struct GKitColor color;
-    struct GKitUnit top;
-    struct GKitUnit left;
-    struct GKitUnit width;
-    struct GKitUnit height;
+    struct GKitValue top;
+    struct GKitValue left;
+    struct GKitValue width;
+    struct GKitValue height;
     int zIndex;
 };
 
@@ -109,13 +73,6 @@ enum GKitElementType {
  * Type: struct GKitElement
  *  Represents an element that can be drawn into a <GKitWindow> instance
  *
- * ===== C ===== 
- *  struct GKitElement {
- *      struct GKitStyle style;
- *      struct GKitElement *parent;
- *      FlList children;
- *  } *GKitElement;
- * 
  */
 struct GKitElement {
     enum GKitElementType type;

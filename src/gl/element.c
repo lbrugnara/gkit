@@ -94,6 +94,8 @@ void gkit_internal_element_destroy(struct GKitElement *element)
             break;
 
         case GKIT_ELEMENT_TEXT:
+            gkit_gl_text_destroy(element);
+
         default:
             break;
     }

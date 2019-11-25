@@ -44,7 +44,7 @@ typedef void (*GKitRenderFunction)(void);
  *  <GKitWindow> - An instance of a GKitWindow
  * 
  */
-GKitWindow gkit_window_create(int width, int height, int x, int y, char *title);
+GKitWindow gkit_window_create(int width, int height, int x, int y, char *title, GKitElement root);
 
 
 /*

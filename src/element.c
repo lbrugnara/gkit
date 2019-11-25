@@ -139,6 +139,12 @@ void gkit_element_destroy(GKitElement element)
             fl_list_free(rect->children);
         }
     }
+    else if (element->type == GKIT_ELEMENT_TEXT)
+    {
+        struct GKitElementText *text = (struct GKitElementText*)element;
+        if (text->content)
+            fl_cstring_free(text->content);
+    }
 
     fl_free(element);
 }

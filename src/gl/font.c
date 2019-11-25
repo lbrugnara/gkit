@@ -52,6 +52,12 @@ bool gkit_internal_font_load_alphabet(struct GKitFont *font, FT_Face face)
         gkit_char->left = face->glyph->bitmap_left;
         gkit_char->top = face->glyph->bitmap_top;
         gkit_char->advance = face->glyph->advance.x;
+
+        if (gkit_char->top > font->gt_top)
+            font->gt_top = gkit_char->top;
+
+        if (gkit_char->height > font->gt_height)
+            font->gt_height = gkit_char->height;
     }
 
     glBindTexture(GL_TEXTURE_2D, 0);

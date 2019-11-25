@@ -22,7 +22,7 @@
  *  GKitWindow - The new instance that identifies the created window.
  *
  */
-GKitWindow gkit_window_create(int width, int height, int x, int y, char* title)
+GKitWindow gkit_window_create(int width, int height, int x, int y, char* title, GKitElement root)
 {
     GKitWindow gkwindow = fl_malloc(sizeof(struct GKitWindow));
 
@@ -41,15 +41,21 @@ GKitWindow gkit_window_create(int width, int height, int x, int y, char* title)
         return NULL;
     }
 
+    if (root)
+    {
+        gkwindow->root = root;
+        return gkwindow;
+    }
+
     gkwindow->root = gkit_element_create(GKIT_ELEMENT_RECT);
 
-    gkwindow->root->style.width = (struct GKitUnit){ .value.pixels = width, .unit = GKIT_UNIT_PIXEL };
-    gkwindow->root->style.height = (struct GKitUnit){ .value.pixels = height, .unit = GKIT_UNIT_PIXEL };
+    gkwindow->root->style.width = (struct GKitValue){ .value.pixels = width, .unit = GKIT_UNIT_PIXEL };
+    gkwindow->root->style.height = (struct GKitValue){ .value.pixels = height, .unit = GKIT_UNIT_PIXEL };
 
     gkwindow->root->style.zIndex = GKIT_Z_INDEX_MIN;
-    gkwindow->root->style.color.red = 255;
-    gkwindow->root->style.color.green = 255;
-    gkwindow->root->style.color.blue = 255;
+    gkwindow->root->style.color.red = 0xCA;
+    gkwindow->root->style.color.green = 0xCA;
+    gkwindow->root->style.color.blue = 0xCA;
     gkwindow->root->style.color.alpha = 1.0f;
 
     return gkwindow;

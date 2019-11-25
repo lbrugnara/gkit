@@ -24,6 +24,8 @@ struct GKitFont* gkit_font_load(const char *file)
     }
 
     struct GKitFont* font = fl_malloc(sizeof(struct GKitFont));
+    font->gt_height = 0;
+    font->gt_top = 0;
 
     default_font = font;
     

@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include <fllib.h>
 #include "rect.h"
-#include "viewport.h"
+#include "calc.h"
 #include "../shader.h"
 #include "../internal/shader.h"
 #include "../internal/element.h"
@@ -66,11 +66,11 @@ bool gkit_gl_rect_draw(struct GKitElement *element, struct GKitViewport viewport
     glUseProgram(glElement->sid);
     glBindVertexArray(glElement->vao);
 
-    float top = viewport_calc_element_top_ndc(&viewport, element);
-    float left = viewport_calc_element_left_ndc(&viewport, element);
-    float right = viewport_calc_element_right_ndc(&viewport, element);
-    float bottom = viewport_calc_element_bottom_ndc(&viewport, element);
-    float zIndex = viewport_calc_element_z_index_ndc(&viewport, element);
+    float top = gkit_calc_element_top_ndc(&viewport, element);
+    float left = gkit_calc_element_left_ndc(&viewport, element);
+    float right = gkit_calc_element_right_ndc(&viewport, element);
+    float bottom = gkit_calc_element_bottom_ndc(&viewport, element);
+    float zIndex = gkit_calc_element_z_index_ndc(&viewport, element);
 
     glElement->vertices[0] = left;
     glElement->vertices[1] = top;
