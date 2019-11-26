@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <glad/glad.h>
 #include <fllib.h>
-#include "rect.h"
 #include "calc.h"
-#include "../shader.h"
-#include "../internal/shader.h"
-#include "../internal/element.h"
+#include "rect.h"
+#include "../../model/internal/element.h"
+#include "../../model/internal/rect.h"
+#include "../../model/internal/shader.h"
 
 static inline bool gkit_gl_rect_is_initialized(struct GLElementRect *glElement)
 {
@@ -44,21 +44,24 @@ bool gkit_gl_rect_initialize(struct GLElementRect *glElement)
     return true;
 }
 
-bool gkit_gl_rect_create(struct GKitElement *element)
+bool gkit_internal_rect_create(struct GKitElementRect *element)
 {
-    if (element == NULL || element->type != GKIT_ELEMENT_RECT || element->raw != NULL)
+    if (element == NULL || element->base.type != GKIT_ELEMENT_RECT || element->base.raw != NULL)
         return false;
 
-    element->raw = fl_malloc(sizeof(struct GLElementRect));
-    struct GLElementRect *glElement = (struct GLElementRect*)element->raw;
+    element->base.raw = fl_malloc(sizeof(struct GLElementRect));
+    struct GLElementRect *glElement = (struct GLElementRect*)element->base.raw;
     memcpy(glElement->indices, (int[6]){ 0, 1, 3, 1, 2, 3 }, sizeof(glElement->indices));
 
     return true;
 }
 
-bool gkit_gl_rect_draw(struct GKitElement *element, struct GKitViewport viewport)
+bool gkit_internal_rect_draw(struct GKitElementRect *element, struct GKitViewport viewport, enum GKitElementType type)
 {
-    struct GLElementRect *glElement = (struct GLElementRect*)element->raw;
+    if (type != element->base.type)
+        return true;
+
+    struct GLElementRect *glElement = (struct GLElementRect*)element->base.raw;
 
     if (!gkit_gl_rect_is_initialized(glElement) && !gkit_gl_rect_initialize(glElement))
         return false;
@@ -66,11 +69,11 @@ bool gkit_gl_rect_draw(struct GKitElement *element, struct GKitViewport viewport
     glUseProgram(glElement->sid);
     glBindVertexArray(glElement->vao);
 
-    float top = gkit_calc_element_top_ndc(&viewport, element);
-    float left = gkit_calc_element_left_ndc(&viewport, element);
-    float right = gkit_calc_element_right_ndc(&viewport, element);
-    float bottom = gkit_calc_element_bottom_ndc(&viewport, element);
-    float zIndex = gkit_calc_element_z_index_ndc(&viewport, element);
+    float top = gkit_calc_element_top_ndc(&viewport, (GKitElement)element);
+    float left = gkit_calc_element_left_ndc(&viewport, (GKitElement)element);
+    float right = gkit_calc_element_right_ndc(&viewport, (GKitElement)element);
+    float bottom = gkit_calc_element_bottom_ndc(&viewport, (GKitElement)element);
+    float zIndex = gkit_calc_element_z_index_ndc(&viewport, (GKitElement)element);
 
     glElement->vertices[0] = left;
     glElement->vertices[1] = top;
@@ -94,10 +97,10 @@ bool gkit_gl_rect_draw(struct GKitElement *element, struct GKitViewport viewport
     int colorLocation = glGetUniformLocation(glElement->sid, "color");
     glUniform4f(
         colorLocation, 
-        (float)element->style.color.red / 255.0f, 
-        (float)element->style.color.green / 255.0f, 
-        (float)element->style.color.blue / 255.0f, 
-        element->style.color.alpha
+        (float)element->base.style.color.red / 255.0f, 
+        (float)element->base.style.color.green / 255.0f, 
+        (float)element->base.style.color.blue / 255.0f, 
+        element->base.style.color.alpha
     );
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -106,9 +109,9 @@ bool gkit_gl_rect_draw(struct GKitElement *element, struct GKitViewport viewport
     return true;
 }
 
-void gkit_gl_rect_destroy(struct GKitElement *element)
+void gkit_internal_rect_destroy(struct GKitElementRect *element)
 {
-    struct GLElementRect *glElement = (struct GLElementRect*)element->raw;
+    struct GLElementRect *glElement = (struct GLElementRect*)element->base.raw;
     glDeleteVertexArrays(1, &glElement->vao);
     glDeleteBuffers(1, &glElement->vbo);
     glDeleteBuffers(1, &glElement->ebo);

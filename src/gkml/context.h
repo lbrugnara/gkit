@@ -41,7 +41,7 @@ enum GkmlErrorType {
     GKML_ERROR_LARGE_INTEGER,
 
     // Symbol couldn't be found
-    GKML_ERROR_MISSING_SYMBOL,
+    GKML_ERROR_UNKNOWN_VALUE,
 
     // Symbol already exists
     GKML_ERROR_DUPLICATED_SYMBOL,

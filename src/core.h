@@ -1,7 +1,7 @@
-#ifndef GKIT_CORE
-#define GKIT_CORE
+#ifndef GKIT_CORE_H
+#define GKIT_CORE_H
 
-#include <fllib.h>
+#include <stdbool.h>
 
 /*
  * Type: GKitExitFunction
@@ -60,4 +60,4 @@ void gkit_at_exit(GKitExitFunction func);
  */
 void gkit_exit(void);
 
-#endif /* GKIT_CORE */
+#endif /* GKIT_CORE_H */

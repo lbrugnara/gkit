@@ -1,8 +1,13 @@
-#ifndef GKIT_ELEMENT_H
-#define GKIT_ELEMENT_H
+#ifndef GKIT_MODEL_ELEMENT_H
+#define GKIT_MODEL_ELEMENT_H
 
-#include <fllib.h>
-#include "internal/element.h"
+#include <stdbool.h>
+#include "viewport.h"
+
+enum GKitElementType {
+    GKIT_ELEMENT_RECT,
+    GKIT_ELEMENT_TEXT,
+};
 
 /*
  * Type: GKitElement
@@ -12,14 +17,18 @@ typedef struct GKitElement *GKitElement;
 
 /*
  * Function: gkit_element_create
- *  Creates a new instance of a <GKitElement>
+ *  Creates a new instance of a <GKitElement> based on the provided
+ *  <GKitElementType>.
  *
  * Parameters:
- *  None.
+ *  <enum GKitElementType> type - The type of element to be created
  *
  * Returns:
  *  GKitElement - Instance of the new <GKitElement>
  *
+ * Notes:
+ *  The objects returned by this function can be safely casted to the
+ *  specific type of object they represent based on the <enum GKitElementType>
  */
 GKitElement gkit_element_create(enum GKitElementType type);
 
@@ -39,11 +48,14 @@ bool gkit_element_add_child(GKitElement parent, GKitElement child);
 
 /*
  * Function: gkit_element_draw
- *  Draws a <GKitElement> to the current attached <GKitWindow>.
+ *  If the *element*'s type is equals to the provided <enum GKitElementType> *type*, 
+ *  this function draws the <GKitElement> to the current attached <GKitWindow>, otherwise
+ *  the element is not rendered
  *
  * Parameters:
- *  element - <GKitElement> to be drawn.
- *  viewport - <GKitWindow> viewport's size.
+ *  <GKitElement> element - Element to be drawn.
+ *  <struct GKitViewport> viewport - Object containing the viewport's properties.
+ *  <enum GKitElementType> type - Type of elements to draw
  *
  * Returns:
  *  bool - *true* on success. Otherwise it returns *false*.
@@ -65,4 +77,4 @@ bool gkit_element_draw(GKitElement element, struct GKitViewport viewport, enum G
  */
 void gkit_element_destroy(GKitElement element);
 
-#endif /* GKIT_ELEMENT_H */
+#endif /* GKIT_MODEL_ELEMENT_H */

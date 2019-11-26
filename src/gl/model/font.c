@@ -1,9 +1,9 @@
+#include <stdbool.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H 
 #include <glad/glad.h>
 
-#include "../internal/font.h"
-#include "../font.h"
+#include "../../model/internal/font.h"
 
 bool gkit_internal_font_load_alphabet(struct GKitFont *font, FT_Face face)
 {

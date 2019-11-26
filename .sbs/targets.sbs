@@ -8,8 +8,8 @@ compile gkit-objects {
         "dependencies\glad.c",
         # Add all the C files in the 'src' folder
         "src/[^/]+\.c$"
-        # Add all the C files in the 'src/gkml' folder
-        "src/gkml/.+\.c$"
+        # Add all the C files in the folders within the group
+        "src/(gkml|model)/.+\.c$"
     ]
 }
 
@@ -22,7 +22,7 @@ compile gkit-glfw-objects {
     sources: [
         "src/gl/glfw/core.c",
         "src/gl/glfw/window.c",
-        "src/gl/[^/]+\.c$"
+        "src/gl/model/.+\.c$"
     ]
 }
 
@@ -39,7 +39,7 @@ compile gkit-glut-objects {
     sources: [
         "src/gl/glut/core.c",
         "src/gl/glut/window.c",
-        "src/gl/[^/]+\.c$"
+        "src/gl/model/.+\.c$"
     ]
 }
 

@@ -1,10 +1,11 @@
+#include <fllib.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H 
 
 #include "internal/font.h"
-#include "font.h"
-#include "core.h"
+#include "../internal/core.h"
 
+// FIXME: For prototyping quickness, we use a global font
 struct GKitFont* default_font = NULL;
 
 struct GKitFont* gkit_font_load(const char *file)

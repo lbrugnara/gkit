@@ -1,42 +1,5 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <fllib.h>
-#include "core.h"
-
-/*
- * Function: gkit_internal_init
- *  Each specific implementation will use this function to initialize all the resource
- *  that are necessary in order to setup the framework
- *
- * Parameters:
- *  argc - Command line arguments count.
- *  argv - Command line arguments.
- *
- * Returns:
- *  bool - *true* on success. Otherwise *false*.
- *
- * See Also:
- *  <gkit_internal_exit>
- *  <gkit_init>
- */
-extern bool gkit_internal_init(int argc, char **argv);
-
-/*
- * Function: gkit_internal_exit
- *  Each specific implementation will use this function to cleanup all the
- *  resources initialized with <gkit_internal_init>.
- *
- * Parameters:
- *  None.
- *
- * Returns:
- * bool - *true* on success. Otherwise *false*.
- *
- * * See Also:
- *  <gkit_internal_init>
- *  <gkit_exit>
- */
-extern bool gkit_internal_exit(void);
+#include "internal/core.h"
 
 /*
  * Variable: initialized

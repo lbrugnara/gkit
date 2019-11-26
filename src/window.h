@@ -1,7 +1,7 @@
-#ifndef GKIT_WINDOW
-#define GKIT_WINDOW
+#ifndef GKIT_WINDOW_H
+#define GKIT_WINDOW_H
 
-#include "element.h"
+#include "model/element.h"
 
 /*
  * Type: GKitWindow
@@ -39,6 +39,7 @@ typedef void (*GKitRenderFunction)(void);
  *  x - Window's x-axis position
  *  y - Window's y-axis position
  *  title - Window's title
+ *  root - If not NULL, the root element of the <GKitElement> tree to be rendered on the window
  * 
  * Returns:
  *  <GKitWindow> - An instance of a GKitWindow
@@ -46,9 +47,8 @@ typedef void (*GKitRenderFunction)(void);
  */
 GKitWindow gkit_window_create(int width, int height, int x, int y, char *title, GKitElement root);
 
-
 /*
- * Function: gkit_window_root
+ * Function: gkit_window_root_get
  *  Returns a reference to a <GKitElement> that represents the root element of
  *  the window containing all the <GKitElement>s to be rendered.
  *
@@ -59,7 +59,21 @@ GKitWindow gkit_window_create(int width, int height, int x, int y, char *title, 
  *  GKitElement - The root <GKitElement>.
  *
  */
-GKitElement gkit_window_root(GKitWindow gkwindow);
+GKitElement gkit_window_root_get(GKitWindow gkwindow);
+
+/*
+ * Function: gkit_window_root_set
+ *  Sets the window's root element
+ *
+ * Parameters:
+ *  <GkitWindow> gkwindow - Window to set its root <GKitElement>
+ *  <GKitElement> root - Object to set as the root element of the tree within the window object
+ *
+ * Returns:
+ *  void - This function does not return a value
+ *  
+ */
+void gkit_window_root_set(GKitWindow gkwindow, GKitElement root);
 
 /*
  * Function: gkit_window_make_current
@@ -203,4 +217,4 @@ void gkit_window_destroy(GKitWindow gkwindow);
  */
 void* gkit_window_raw(GKitWindow gkwindow);
 
-#endif /* GKIT_WINDOW */
+#endif /* GKIT_WINDOW_H */

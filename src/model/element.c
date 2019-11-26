@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include <glad/glad.h>
 #include <fllib.h>
 #include "element.h"
-#include "internal/window.h"
+#include "internal/rect.h"
+#include "internal/text.h"
 
 /*
  * Function: gkit_element_create
@@ -17,31 +17,17 @@
  */
 GKitElement gkit_element_create(enum GKitElementType type)
 {
-    struct GKitElement *element = NULL;
-    
     switch (type)
     {
         case GKIT_ELEMENT_RECT:
-            element = fl_malloc(sizeof(struct GKitElementRect));
-            break;
+            return (GKitElement)gkit_rect_create();
 
         case GKIT_ELEMENT_TEXT:
-            element = fl_malloc(sizeof(struct GKitElementText));
-            break;
+            return (GKitElement)gkit_text_create();
 
         default:
             return NULL;
     }
-
-    element->type = type;
-    
-    if (!gkit_internal_element_create(element))
-    {
-        fl_free(element);
-        return NULL;
-    }
-
-    return element;
 }
 
 
@@ -90,22 +76,17 @@ bool gkit_element_add_child(GKitElement parent, GKitElement child)
  */
 bool gkit_element_draw(GKitElement element, struct GKitViewport viewport, enum GKitElementType type)
 {
-    gkit_internal_element_draw(element, viewport, type);
-
-    if (element->type == GKIT_ELEMENT_RECT)
+    switch (element->type)
     {
-        struct GKitElementRect *rect = (struct GKitElementRect*)element;
-        if (rect->children)
-        {
-            struct FlListNode *node = fl_list_head(rect->children);
-            while (node) {
-                gkit_element_draw((GKitElement)node->value, viewport, type);
-                node = node->next;
-            }
-        }
-    }
+        case GKIT_ELEMENT_RECT:
+            return gkit_rect_draw((GKitElementRect)element, viewport, type);
 
-    return true;
+        case GKIT_ELEMENT_TEXT:
+            return gkit_text_draw((GKitElementText)element, viewport, type);
+
+        default:
+            return false;
+    }
 }
 
 
@@ -123,28 +104,17 @@ bool gkit_element_draw(GKitElement element, struct GKitViewport viewport, enum G
  */
 void gkit_element_destroy(GKitElement element)
 {
-    gkit_internal_element_destroy(element);
-
-    if (element->type == GKIT_ELEMENT_RECT)
+    switch (element->type)
     {
-        struct GKitElementRect *rect = (struct GKitElementRect*)element;
-        if (rect->children)
-        {
-            struct FlListNode *node = fl_list_head(rect->children);
-            while (node) 
-            {
-                gkit_element_destroy((GKitElement)node->value);
-                node = node->next;
-            }
-            fl_list_free(rect->children);
-        }
-    }
-    else if (element->type == GKIT_ELEMENT_TEXT)
-    {
-        struct GKitElementText *text = (struct GKitElementText*)element;
-        if (text->content)
-            fl_cstring_free(text->content);
-    }
+        case GKIT_ELEMENT_RECT:
+            gkit_rect_destroy((GKitElementRect)element);
+            break;
 
-    fl_free(element);
+        case GKIT_ELEMENT_TEXT:
+            gkit_text_destroy((GKitElementText)element);
+            break;
+
+        default:
+            return;
+    }
 }

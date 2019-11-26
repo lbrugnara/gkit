@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <windows.h>
+#include <fllib.h>
 #include "core.h"
 #include "window.h"
-#include "font.h"
-#include "element.h"
-#include "gkml/markup.h"
-#include "internal/element.h"
+#include "model/font.h"
+#include "model/element.h"
+#include "gkml/gkml.h"
+
+static long ms_per_frame = 1000 / 60; // We want approximately 60 frames per second (1000 miliseconds)
 
 int main(int argc, char **argv)
 {
@@ -15,12 +17,8 @@ int main(int argc, char **argv)
         gkit_exit();
         exit(-1);
     }
-    
-    GKitElement root = NULL;
-    if (fl_io_file_exists("main.gkml"))
-        root = gkml_load("main.gkml");
 
-    GKitWindow window = gkit_window_create(800, 600, 0, 0, "gkit", root);
+    GKitWindow window = gkit_window_create(800, 600, 0, 0, "gkit", NULL);
 
     if (!gkit_window_make_current(window))
     {
@@ -34,19 +32,44 @@ int main(int argc, char **argv)
         fprintf(stderr, "Could not load the default font");
         gkit_exit();
         exit(-1);
-    }    
+    }
 
+    FlTimer timer = fl_timer_create();
+
+    unsigned long long last_update_timestamp = 0;
     while (gkit_window_alive(window))
     {
-        if (GetKeyState(VK_ESCAPE) & 0x8000)
+        // New tick starts here
+        fl_timer_tick(timer);
+
+        if (fl_io_file_exists("main.gkml"))
         {
-            gkit_window_close(window);
+            unsigned long long current_timestamp = 0;
+            fl_io_file_get_modified_timestamp("main.gkml", &current_timestamp);
+
+            if (current_timestamp > last_update_timestamp)
+            {
+                if (fl_io_file_exists("main.gkml"))
+                {
+                    GKitElement root = gkml_load("main.gkml");
+                    if (root)
+                        gkit_window_root_set(window, root);
+                }
+                gkit_window_render(window);
+
+                last_update_timestamp = current_timestamp;
+            }
         }
 
-        gkit_window_render(window);
+        gkit_window_process_events(window);
 
-        gkit_window_wait_events(window);
+        // Current tick ends here
+        long frame_elapsed_ms = fl_timer_tick(timer);
+        if (frame_elapsed_ms < ms_per_frame)
+            fl_system_sleep(ms_per_frame - frame_elapsed_ms);
     }
+
+    fl_timer_free(timer);
 
     // GKitWindow will destroy all the GKitElements children of the root element
     gkit_window_destroy(window);

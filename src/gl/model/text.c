@@ -1,10 +1,12 @@
+#include <fllib.h>
 #include <float.h>
 #include <glad/glad.h>
 #include "text.h"
 #include "calc.h"
-#include "../shader.h"
-#include "../internal/font.h"
-#include "../internal/element.h"
+#include "../../model/internal/shader.h"
+#include "../../model/internal/element.h"
+#include "../../model/internal/font.h"
+#include "../../model/internal/text.h"
 
 struct GKitFont* default_font;
 
@@ -51,21 +53,24 @@ static inline bool gkit_gl_text_initialize(struct GLElementText *glElement)
     return true;
 }
 
-bool gkit_gl_text_create(struct GKitElement *element)
+bool gkit_internal_text_create(GKitElementText element)
 {
-    if (element == NULL || element->type != GKIT_ELEMENT_TEXT || element->raw != NULL)
+    if (element == NULL || element->base.type != GKIT_ELEMENT_TEXT || element->base.raw != NULL)
         return false;
 
-    element->raw = fl_malloc(sizeof(struct GLElementText));
-    struct GLElementText *glElement = (struct GLElementText*)element->raw;
+    element->base.raw = fl_malloc(sizeof(struct GLElementText));
+    struct GLElementText *glElement = (struct GLElementText*)element->base.raw;
 
     return true;
 }
 
-bool gkit_gl_text_draw(struct GKitElement *element, struct GKitViewport viewport)
+bool gkit_internal_text_draw(GKitElementText element, struct GKitViewport viewport, enum GKitElementType type)
 {
+    if (type != element->base.type)
+        return true;
+
     struct GKitElementText *textElement = (struct GKitElementText*)element;
-    struct GLElementText *glElement = (struct GLElementText*)element->raw;
+    struct GLElementText *glElement = (struct GLElementText*)element->base.raw;
 
     if (!gkit_gl_text_is_initialized(glElement) && !gkit_gl_text_initialize(glElement))
         return false;
@@ -75,19 +80,19 @@ bool gkit_gl_text_draw(struct GKitElement *element, struct GKitViewport viewport
 
     glUniform4f(
         glGetUniformLocation(glElement->sid, "textColor"),
-        (float)element->style.color.red / 255.0f, 
-        (float)element->style.color.green / 255.0f, 
-        (float)element->style.color.blue / 255.0f, 
-        element->style.color.alpha
+        (float)element->base.style.color.red / 255.0f, 
+        (float)element->base.style.color.green / 255.0f, 
+        (float)element->base.style.color.blue / 255.0f, 
+        element->base.style.color.alpha
     );
 
 
     // TODO: An overflow property should set this accordingly to let the fragment shader
     // discard fragments outside the rectangle bounds
-    int box_overflow_left_px =   /*0;                 //*/  gkit_calc_element_left_px(&viewport, element);
-    int box_overflow_right_px =  /*viewport.width;    //*/  gkit_calc_element_right_px(&viewport, element);
-    int box_overflow_top_px =    /*viewport.height;   //*/  viewport.height - gkit_calc_element_top_px(&viewport, element);
-    int box_overflow_bottom_px = /*0;                 //*/  viewport.height- gkit_calc_element_bottom_px(&viewport, element);
+    int box_overflow_left_px =   /*0;                 //*/  gkit_layout_element_left((GKitElement)element, &viewport);
+    int box_overflow_right_px =  /*viewport.width;    //*/  gkit_layout_element_right((GKitElement)element, &viewport);
+    int box_overflow_top_px =    /*viewport.height;   //*/  viewport.height - gkit_layout_element_top((GKitElement)element, &viewport);
+    int box_overflow_bottom_px = /*0;                 //*/  viewport.height- gkit_layout_element_bottom((GKitElement)element, &viewport);
 
     glUniform1i(glGetUniformLocation(glElement->sid, "left"), box_overflow_left_px);
     glUniform1i(glGetUniformLocation(glElement->sid, "right"), box_overflow_right_px);
@@ -101,11 +106,11 @@ bool gkit_gl_text_draw(struct GKitElement *element, struct GKitViewport viewport
 
     // The 'x' value is our "pen" while we are writing, we start at the rect's left-most
     // side and we 'advance' to the next 'x' after writing each character
-    float character_x_px = gkit_calc_element_left_px(&viewport, element);
+    float character_x_px = gkit_layout_element_left((GKitElement)element, &viewport);
 
     // We start to write at the top-left side within the rect, so our starting
     // point is the rect's top value (plus a calculation based on each character)
-    int box_top_px = gkit_calc_element_top_px(&viewport, element);
+    int box_top_px = gkit_layout_element_top((GKitElement)element, &viewport);
 
     // font-size
     float scale = 1.0f;
@@ -139,7 +144,7 @@ bool gkit_gl_text_draw(struct GKitElement *element, struct GKitViewport viewport
         // top in the alphabet and the current character's top
         float top    = gkit_calc_y_value_ndc(&viewport, box_top_px + (gt_top - ch_top));
 
-        float zIndex = gkit_calc_element_z_index_ndc(&viewport, element);
+        float zIndex = gkit_calc_element_z_index_ndc(&viewport, (GKitElement)element);
 
 
         GLfloat vertices[6][3] = {
@@ -190,9 +195,9 @@ bool gkit_gl_text_draw(struct GKitElement *element, struct GKitViewport viewport
     return true;
 }
 
-void gkit_gl_text_destroy(struct GKitElement *element)
+void gkit_internal_text_destroy(GKitElementText element)
 {
-    struct GLElementText *glElement = (struct GLElementText*)element->raw;
+    struct GLElementText *glElement = (struct GLElementText*)element->base.raw;
     glDeleteVertexArrays(1, &glElement->vao);
     glDeleteBuffers(1, &glElement->vbo);
     gkit_shader_destroy(glElement->shader);

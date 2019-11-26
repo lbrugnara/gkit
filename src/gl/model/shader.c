@@ -1,6 +1,6 @@
 #include <glad/glad.h>
 #include <fllib.h>
-#include "../internal/shader.h"
+#include "../../model/internal/shader.h"
 
 static const char *DEFAULT_VERTEX_SHADER =
     "#version 330 core"                                     "\n"

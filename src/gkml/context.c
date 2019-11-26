@@ -33,9 +33,19 @@ static void error_free(void *errorptr)
 struct GkmlContext gkml_context_new(enum GkmlSourceType type, const char *input)
 {
     struct GkmlContext ctx = { 
-        .srcinfo = gkml_source_new(type, input),
+        .srcinfo = NULL,
         .errors = NULL
     };
+
+    struct GkmlSourceInfo *srcinfo = gkml_source_new(type, input);
+
+    if (srcinfo == NULL)
+    {
+        gkml_context_error(&ctx, (struct GkmlSourceLocation){ 0 }, GKML_ERROR_INTERNAL, "Could not read from the source");
+        return ctx;
+    }
+
+    ctx.srcinfo = srcinfo;
 
     return ctx;
 }

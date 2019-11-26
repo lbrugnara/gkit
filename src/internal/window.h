@@ -1,7 +1,8 @@
 #ifndef GKIT_WINDOW_INTERNAL_H
 #define GKIT_WINDOW_INTERNAL_H
 
-#include <fllib.h>
+#include <stdbool.h>
+#include "../window.h"
 
 /*
  * Type: struct GKitWindow

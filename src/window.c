@@ -1,9 +1,41 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <fllib.h>
-#include "element.h"
-#include "window.h"
+#include "model/internal/element.h"
 #include "internal/window.h"
+
+static inline void set_default_style(struct GKitStyle *style, int width, int height)
+{
+    style->color = (struct GKitColor) {
+        .red = 0xCA,
+        .green = 0xCA,
+        .blue = 0xCA,
+        .alpha = 1.0f
+    };
+
+    style->layout = (struct GKitLayout) {
+        .type = GKIT_LAYOUT_NONE,
+
+        .width  = { .unit = GKIT_UNIT_PIXEL, .value.pixels = width },
+        .height = { .unit = GKIT_UNIT_PIXEL, .value.pixels = height },
+
+        .position = {
+            .left   = { .unit = GKIT_UNIT_PIXEL, .value.pixels = 0 },
+            .right  = { .unit = GKIT_UNIT_PIXEL, .value.pixels = 0 },
+            .top    = { .unit = GKIT_UNIT_PIXEL, .value.pixels = 0 },
+            .bottom = { .unit = GKIT_UNIT_PIXEL, .value.pixels = 0 },
+        },
+
+        .margin = {
+            .left   = { .unit = GKIT_UNIT_PIXEL, .value.pixels = 0 },
+            .right  = { .unit = GKIT_UNIT_PIXEL, .value.pixels = 0 },
+            .top    = { .unit = GKIT_UNIT_PIXEL, .value.pixels = 0 },
+            .bottom = { .unit = GKIT_UNIT_PIXEL, .value.pixels = 0 },
+        }
+    };
+
+    style->zIndex = GKIT_Z_INDEX_MIN;
+}
 
 /*
  * Function: gkit_window_create
@@ -49,21 +81,23 @@ GKitWindow gkit_window_create(int width, int height, int x, int y, char* title, 
 
     gkwindow->root = gkit_element_create(GKIT_ELEMENT_RECT);
 
-    gkwindow->root->style.width = (struct GKitValue){ .value.pixels = width, .unit = GKIT_UNIT_PIXEL };
-    gkwindow->root->style.height = (struct GKitValue){ .value.pixels = height, .unit = GKIT_UNIT_PIXEL };
-
-    gkwindow->root->style.zIndex = GKIT_Z_INDEX_MIN;
-    gkwindow->root->style.color.red = 0xCA;
-    gkwindow->root->style.color.green = 0xCA;
-    gkwindow->root->style.color.blue = 0xCA;
-    gkwindow->root->style.color.alpha = 1.0f;
+    set_default_style(&gkwindow->root->style, width, height);
 
     return gkwindow;
 }
 
-GKitElement gkit_window_root(GKitWindow gkwindow)
+GKitElement gkit_window_root_get(GKitWindow gkwindow)
 {
     return gkwindow->root;
+}
+
+void gkit_window_root_set(GKitWindow gkwindow, GKitElement root)
+{
+    GKitElement old = gkwindow->root;
+    gkwindow->root = root;
+
+    if (old)
+        gkit_element_destroy(old);
 }
 
 bool gkit_window_make_current(GKitWindow gkwindow)
@@ -87,12 +121,7 @@ void gkit_window_render(GKitWindow gkwindow)
 {
     gkit_internal_window_render(gkwindow);
 
-    // Root always honors viewport width and height
-    gkwindow->root->style.width.value.pixels = gkwindow->width;
-    gkwindow->root->style.width.unit = GKIT_UNIT_PIXEL;
-    gkwindow->root->style.height.value.pixels = gkwindow->height;
-    gkwindow->root->style.height.unit = GKIT_UNIT_PIXEL;
-
+    // Render the rectangles first so the text's blending occurs with the background elements ready
     gkit_element_draw(gkwindow->root, (struct GKitViewport) { gkwindow->width, gkwindow->height }, GKIT_ELEMENT_RECT);
     gkit_element_draw(gkwindow->root, (struct GKitViewport) { gkwindow->width, gkwindow->height }, GKIT_ELEMENT_TEXT);
 

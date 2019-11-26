@@ -1,9 +1,11 @@
-#ifndef GKIT_FONT_INTERNAL_H
-#define GKIT_FONT_INTERNAL_H
+#ifndef GKIT_INTERNAL_FONT_H
+#define GKIT_INTERNAL_FONT_H
 
-#include <fllib.h>
+#include <stdbool.h>
 #include <ft2build.h>
 #include FT_FREETYPE_H 
+
+#include "../font.h"
 
 struct GKitCharacter {
     unsigned int id;
@@ -21,6 +23,6 @@ struct GKitFont {
     int gt_top;
 };
 
-bool gkit_internal_font_load_alphabet(struct GKitFont *font, FT_Face face);
+bool gkit_internal_font_load_alphabet(GKitFont font, FT_Face face);
 
-#endif /* GKIT_FONT_INTERNAL_H */
+#endif /* GKIT_INTERNAL_FONT_H */

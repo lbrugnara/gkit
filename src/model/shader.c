@@ -1,5 +1,4 @@
 #include <fllib.h>
-#include "shader.h"
 #include "internal/shader.h"
 
 GKitShader gkit_shader_create(const char *vs_source, const char *fs_source)
