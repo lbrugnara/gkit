@@ -104,12 +104,12 @@ float gkit_calc_element_z_index_ndc(struct GKitViewport *viewport, struct GKitEl
     return pzi < zIndexf ? pzi : zIndexf;
 }
 
-float gkit_calc_x_value_ndc(struct GKitViewport *viewport, unsigned int value)
+float gkit_calc_x_value_ndc(struct GKitViewport *viewport, int value)
 {
     return (2.0f *  value) / viewport->width - 1.0f;
 }
 
-float gkit_calc_y_value_ndc(struct GKitViewport *viewport, unsigned int value)
+float gkit_calc_y_value_ndc(struct GKitViewport *viewport, int value)
 {
     return (-2.0f *  value) / viewport->height + 1.0f;
 }

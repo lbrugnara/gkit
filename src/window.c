@@ -16,6 +16,8 @@ static inline void set_default_style(struct GKitStyle *style, int width, int hei
     style->layout = (struct GKitLayout) {
         .type = GKIT_LAYOUT_NONE,
 
+        .overflow = GKIT_OVERFLOW_VISIBLE,
+
         .width  = { .unit = GKIT_UNIT_PIXEL, .value.pixels = width },
         .height = { .unit = GKIT_UNIT_PIXEL, .value.pixels = height },
 

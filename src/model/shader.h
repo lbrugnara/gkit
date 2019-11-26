@@ -42,6 +42,7 @@ GKitShader gkit_shader_create(const char *vs_source, const char *fs_source);
  */
 GKitShader gkit_shader_create_default(void);
 
+GKitShader gkit_shader_create_from_file(const char *vs_file, const char *fs_file);
 
 /*
  * Function: gkit_shader_destroy

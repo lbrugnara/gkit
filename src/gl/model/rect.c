@@ -20,7 +20,7 @@ bool gkit_gl_rect_initialize(struct GLElementRect *glElement)
     if (!glElement)
         return false;
 
-    glElement->shader = gkit_shader_create_default();
+    glElement->shader = gkit_shader_create_from_file("resources/shaders/rect.vs.glsl", "resources/shaders/rect.fs.glsl");
 
     if (!glElement->shader)
         return false;
@@ -66,7 +66,16 @@ bool gkit_internal_rect_draw(struct GKitElementRect *element, struct GKitViewpor
     if (!gkit_gl_rect_is_initialized(glElement) && !gkit_gl_rect_initialize(glElement))
         return false;
 
+    // Set the program to start processing the drawing properties
     glUseProgram(glElement->sid);
+
+    // Properties for overflow
+    glUniform1i(glGetUniformLocation(glElement->sid, "left"), gkit_layout_element_limit_left((GKitElement)element, &viewport));
+    glUniform1i(glGetUniformLocation(glElement->sid, "right"), gkit_layout_element_limit_right((GKitElement)element, &viewport));
+    glUniform1i(glGetUniformLocation(glElement->sid, "top"), gkit_layout_element_limit_top((GKitElement)element, &viewport));
+    glUniform1i(glGetUniformLocation(glElement->sid, "bottom"), gkit_layout_element_limit_bottom((GKitElement)element, &viewport));
+
+    // Start rendering
     glBindVertexArray(glElement->vao);
 
     float top = gkit_calc_element_top_ndc(&viewport, (GKitElement)element);

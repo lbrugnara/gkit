@@ -3,6 +3,8 @@
 #include "element.h"
 #include "internal/text.h"
 
+extern struct GKitFont* default_font;
+
 static inline void set_default_style(struct GKitStyle *style)
 {
     style->color = (struct GKitColor) {
@@ -14,6 +16,8 @@ static inline void set_default_style(struct GKitStyle *style)
 
     style->layout = (struct GKitLayout) {
         .type = GKIT_LAYOUT_NONE,
+
+        .overflow = GKIT_OVERFLOW_VISIBLE,
 
         .width  = { .unit = GKIT_UNIT_PERCENTAGE, .value.percentage = 100 },
         .height = { .unit = GKIT_UNIT_PERCENTAGE, .value.percentage = 100 },
@@ -40,6 +44,7 @@ GKitElementText gkit_text_create(void)
 {
     struct GKitElementText *element = fl_malloc(sizeof(struct GKitElementText));
     element->base.type = GKIT_ELEMENT_TEXT;
+    element->font = default_font;
 
     set_default_style(&element->base.style);
     

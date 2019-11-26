@@ -1,29 +1,67 @@
 #include "none.h"
 #include "../internal/element.h"
+#include "../internal/text.h"
 
 
 int gkit_layout_none_element_width(GKitElement element, struct GKitViewport *viewport)
 {
-    if (element->style.layout.width.unit == GKIT_UNIT_PIXEL)
-        return element->style.layout.width.value.pixels;
+    if (element->type == GKIT_ELEMENT_RECT)
+    {
+        if (element->style.layout.width.unit == GKIT_UNIT_PIXEL)
+            return element->style.layout.width.value.pixels;
 
-    // GKIT_UNIT_PERCENTAGE
-    if (!element->parent)
-        return viewport->width * element->style.layout.width.value.percentage / 100;
+        // GKIT_UNIT_PERCENTAGE
+        if (!element->parent)
+            return viewport->width * element->style.layout.width.value.percentage / 100;
 
-    return gkit_layout_element_width(element->parent, viewport) * element->style.layout.width.value.percentage / 100;
+        return gkit_layout_element_width(element->parent, viewport) * element->style.layout.width.value.percentage / 100;
+    }
+
+    if (element->type == GKIT_ELEMENT_TEXT)
+    {
+        GKitElementText text = (GKitElementText)element;
+        // FIXME: We need the font-size to scale this value
+
+        if (text->content == NULL)
+            return 0;
+
+        int width = 0;
+        for (size_t i=0; i < strlen(text->content); i++)
+        {
+            struct GKitCharacter character = text->font->alphabet[(int)text->content[i]];
+            // The advance property is the distance between the begining of the different
+            // characters
+            width += character.advance >> 6;
+        }
+
+        return width;
+    }
+
+    return 0;
 }
 
 int gkit_layout_none_element_height(GKitElement element, struct GKitViewport *viewport)
 {
-    if (element->style.layout.height.unit == GKIT_UNIT_PIXEL)
-        return element->style.layout.height.value.pixels;
+    if (element->type == GKIT_ELEMENT_RECT)
+    {
+        if (element->style.layout.height.unit == GKIT_UNIT_PIXEL)
+            return element->style.layout.height.value.pixels;
 
-    // GKIT_UNIT_PERCENTAGE
-    if (!element->parent)
-        return viewport->height * element->style.layout.height.value.percentage / 100;
+        // GKIT_UNIT_PERCENTAGE
+        if (!element->parent)
+            return viewport->height * element->style.layout.height.value.percentage / 100;
 
-    return gkit_layout_element_height(element->parent, viewport) * element->style.layout.height.value.percentage / 100;
+        return gkit_layout_element_height(element->parent, viewport) * element->style.layout.height.value.percentage / 100;
+    }
+    
+    if (element->type == GKIT_ELEMENT_TEXT)
+    {
+        GKitElementText text = (GKitElementText)element;
+        // FIXME: We need the font-size to scale this value
+        return text->font->gt_height;
+    }
+
+    return 0;
 }
 
 

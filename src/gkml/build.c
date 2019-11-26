@@ -91,6 +91,28 @@ static void string_to_gkit_layout_type(struct GkmlContext *ctx, struct GkmlLiter
     }
 }
 
+static void string_to_gkit_overflow(struct GkmlContext *ctx, struct GkmlLiteralNode *literal, const char *attr_name, enum GKitOverflow *value)
+{
+    if (literal->type != GKML_LITERAL_STRING)
+    {
+        gkml_context_error(ctx, literal->base.location, GKML_ERROR_TYPE_MISSMATCH, "Expecting a string value for property '%s'", attr_name);
+        return;
+    }
+
+    if (flm_cstring_equals(literal->value.string, "visible"))
+    {
+        *value = GKIT_OVERFLOW_VISIBLE;
+    }
+    else if (flm_cstring_equals(literal->value.string, "hidden"))
+    {
+        *value = GKIT_OVERFLOW_HIDDEN;
+    }
+    else
+    {
+        gkml_context_error(ctx, literal->base.location, GKML_ERROR_UNKNOWN_VALUE, "Unknown value '%s' for property '%s'", literal->value.string, attr_name);
+    }
+}
+
 void gkml_visit_style_node(struct GkmlContext *ctx, struct GkmlStyleNode *node, struct GKitStyle *style)
 {
     if (!node)
@@ -108,6 +130,7 @@ void gkml_visit_style_node(struct GkmlContext *ctx, struct GkmlStyleNode *node, 
         MAP_START;
         map_literal_handler(attr, "color", literal_to_gkit_color, &style->color);
         map_literal_handler(attr, "layout-type", string_to_gkit_layout_type, &style->layout.type);
+        map_literal_handler(attr, "overflow", string_to_gkit_overflow, &style->layout.overflow);
         map_literal_handler(attr, "position-left", literal_to_gkit_value, &style->layout.position.left);
         map_literal_handler(attr, "position-right", literal_to_gkit_value, &style->layout.position.right);
         map_literal_handler(attr, "position-top", literal_to_gkit_value, &style->layout.position.top);

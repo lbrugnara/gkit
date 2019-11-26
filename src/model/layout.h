@@ -16,6 +16,11 @@ enum GKitUnit {
     GKIT_UNIT_PERCENTAGE
 };
 
+enum GKitOverflow {
+    GKIT_OVERFLOW_VISIBLE,
+    GKIT_OVERFLOW_HIDDEN,
+};
+
 /*
  * Type: struct GKitValue
  *  Represents a unit of measurement and its associated value
@@ -40,6 +45,8 @@ struct GKitLayout {
     struct GKitValue width;
     struct GKitValue height;
 
+    enum GKitOverflow overflow;
+
     struct {
         struct GKitValue left;
         struct GKitValue right;
@@ -62,5 +69,10 @@ int gkit_layout_element_left(struct GKitElement *element, struct GKitViewport *v
 int gkit_layout_element_right(struct GKitElement *element, struct GKitViewport *viewport);
 int gkit_layout_element_top(struct GKitElement *element, struct GKitViewport *viewport);
 int gkit_layout_element_bottom(struct GKitElement *element, struct GKitViewport *viewport);
+
+int gkit_layout_element_limit_left(struct GKitElement *element, struct GKitViewport *viewport);
+int gkit_layout_element_limit_right(struct GKitElement *element, struct GKitViewport *viewport);
+int gkit_layout_element_limit_top(struct GKitElement *element, struct GKitViewport *viewport);
+int gkit_layout_element_limit_bottom(struct GKitElement *element, struct GKitViewport *viewport);
 
 #endif /* GKIT_MODEL_LAYOUT_H */

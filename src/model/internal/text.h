@@ -2,12 +2,14 @@
 #define GKIT_INTERNAL_TEXT_H
 
 #include <stdbool.h>
-#include "element.h"
 #include "../text.h"
 #include "../viewport.h"
+#include "element.h"
+#include "font.h"
 
 struct GKitElementText {
     struct GKitElement base;
+    struct GKitFont* font;
     char *content;
 };
 
