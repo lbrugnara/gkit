@@ -1,5 +1,6 @@
 #version 330 core
 
+layout(origin_upper_left) in vec4 gl_FragCoord;
 out vec4 FragColor;
 uniform vec4 color; 
 

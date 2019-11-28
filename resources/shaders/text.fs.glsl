@@ -1,5 +1,6 @@
 #version 330 core
 
+layout(origin_upper_left) in vec4 gl_FragCoord;
 in vec2 TexCoords;
 
 out vec4 color;

@@ -15,6 +15,8 @@ struct GKitElement {
     void *raw;
     struct GKitStyle style;
     struct GKitElement *parent;
+    struct GKitElement *previous;
+    struct GKitElement *next;
 };
 
 #endif /* GKIT_INTERNAL_ELEMENT_H */

@@ -54,6 +54,15 @@ bool gkit_element_add_child(GKitElement parent, GKitElement child)
     if (!rect->children)
         rect->children = fl_list_new();
 
+    struct FlListNode *tail = fl_list_tail(rect->children);
+
+    if (tail)
+    {
+        GKitElement previous = (GKitElement)tail->value;
+        child->previous = previous;
+        previous->next = child;
+    }
+
     fl_list_append(rect->children, child);
 
     child->parent = parent;
