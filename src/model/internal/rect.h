@@ -8,7 +8,7 @@
 
 struct GKitElementRect {
     struct GKitElement base;
-    FlList children;
+    FlList *children;
 };
 
 /*

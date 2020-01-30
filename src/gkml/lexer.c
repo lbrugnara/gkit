@@ -334,7 +334,7 @@ struct GkmlLexer gkml_lexer_new(struct GkmlSourceInfo *srcinfo)
 
 struct GkmlToken* gkml_lexer_tokenize(struct GkmlLexer *lexer)
 {
-    FlVector tempvec = fl_vector_new_args((struct FlVectorArgs) {
+    FlVector *tempvec = fl_vector_new_args((struct FlVectorArgs) {
         .writer = fl_container_writer,
         .element_size = sizeof(struct GkmlToken),
         .capacity = 1000

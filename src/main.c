@@ -34,7 +34,7 @@ int main(int argc, char **argv)
         exit(-1);
     }
 
-    FlTimer timer = fl_timer_create();
+    FlTimer *timer = fl_timer_create();
 
     unsigned long long last_update_timestamp = 0;
     while (gkit_window_alive(window))

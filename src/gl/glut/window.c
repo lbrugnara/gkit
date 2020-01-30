@@ -8,7 +8,7 @@
 #include "../../window.h"
 #include "../../internal/window.h"
 
-static FlHashtable created_windows;
+static FlHashtable *created_windows;
 
 void clean_created_windows(void)
 {
@@ -174,5 +174,5 @@ void gkit_internal_window_wait_events(struct GKitWindow *gkwin)
 void gkit_internal_window_destroy(struct GKitWindow *gkwin)
 {
     glutDestroyWindow(*(int*)gkwin->raw);
-    fl_hashtable_remove(created_windows, gkwin->raw, true);
+    fl_hashtable_remove(created_windows, gkwin->raw, true, true);
 }

@@ -17,7 +17,7 @@ static bool initialized = false;
  *  <gkit_exit>
  *  <GKitExitFunction>
  */
-static FlList exit_functions = NULL;
+static FlList *exit_functions = NULL;
 
 
 /*

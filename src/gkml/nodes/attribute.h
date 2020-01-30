@@ -12,7 +12,7 @@ struct GkmlAttributeNode {
 };
 
 struct GkmlAttributeNodeMap {
-    FlHashtable map;
+    FlHashtable *map;
 };
 
 static inline struct GkmlAttributeNode* gkml_node_attribute_new(char *name, struct GkmlNode *value)
