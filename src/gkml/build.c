@@ -85,6 +85,10 @@ static void string_to_gkit_layout_type(struct GkmlContext *ctx, struct GkmlLiter
     {
         *value = GKIT_LAYOUT_CENTER;
     }
+    else if (flm_cstring_equals(literal->value.string, "mosaic"))
+    {
+        *value = GKIT_LAYOUT_MOSAIC;
+    }
     else
     {
         gkml_context_error(ctx, literal->base.location, GKML_ERROR_UNKNOWN_VALUE, "Unknown value '%s' for property '%s'", literal->value.string, attr_name);

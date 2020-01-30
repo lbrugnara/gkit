@@ -1,9 +1,9 @@
-#include "none.h"
+#include "mosaic.h"
 #include "../internal/element.h"
 #include "../internal/text.h"
 
 
-int gkit_layout_none_element_width(GKitElement element, struct GKitViewport *viewport)
+int gkit_layout_mosaic_element_width(GKitElement element, struct GKitViewport *viewport)
 {
     if (element->type == GKIT_ELEMENT_RECT)
     {
@@ -40,7 +40,7 @@ int gkit_layout_none_element_width(GKitElement element, struct GKitViewport *vie
     return 0;
 }
 
-int gkit_layout_none_element_height(GKitElement element, struct GKitViewport *viewport)
+int gkit_layout_mosaic_element_height(GKitElement element, struct GKitViewport *viewport)
 {
     if (element->type == GKIT_ELEMENT_RECT)
     {
@@ -65,7 +65,7 @@ int gkit_layout_none_element_height(GKitElement element, struct GKitViewport *vi
 }
 
 
-int gkit_layout_none_element_left(struct GKitElement *element, struct GKitViewport *viewport)
+int gkit_layout_mosaic_element_left(struct GKitElement *element, struct GKitViewport *viewport)
 {
     // Root element
     if (!element->parent)
@@ -103,7 +103,7 @@ int gkit_layout_none_element_left(struct GKitElement *element, struct GKitViewpo
     return element_left;
 }
 
-int gkit_layout_none_element_right(struct GKitElement *element, struct GKitViewport *viewport)
+int gkit_layout_mosaic_element_right(struct GKitElement *element, struct GKitViewport *viewport)
 {
     //            Viewport's width
     //      .---------------------------.
@@ -129,7 +129,7 @@ int gkit_layout_none_element_right(struct GKitElement *element, struct GKitViewp
     return gkit_layout_element_left(element, viewport) + gkit_layout_element_width(element, viewport);
 }
 
-int gkit_layout_none_element_top(struct GKitElement *element, struct GKitViewport *viewport)
+int gkit_layout_mosaic_element_top(struct GKitElement *element, struct GKitViewport *viewport)
 {
     // Root element
     if (!element->parent)
@@ -159,21 +159,21 @@ int gkit_layout_none_element_top(struct GKitElement *element, struct GKitViewpor
     if (element->previous && element_width + gkit_layout_element_right(element->previous, viewport) > (int)viewport->width)
     {
         GKitElement sibling = element->previous;
-        int greatest_bottom = 0;
+        int bottom = 0;
         do {
             int sibling_bottom = gkit_layout_element_bottom(sibling, viewport);
-            if (sibling_bottom > greatest_bottom)
-                greatest_bottom = sibling_bottom;
+            if (element_width <= gkit_layout_element_width(sibling, viewport) || sibling_bottom > bottom)
+                bottom = sibling_bottom;
             sibling = sibling->previous;
         } while (sibling);
 
-        element_calculated_top = element_top + greatest_bottom;
+        return bottom;
     }
 
     return element_calculated_top;
 }
 
-int gkit_layout_none_element_bottom(struct GKitElement *element, struct GKitViewport *viewport)
+int gkit_layout_mosaic_element_bottom(struct GKitElement *element, struct GKitViewport *viewport)
 {
     // We first get the bottom offset using the top and height:
     //

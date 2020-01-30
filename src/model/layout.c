@@ -2,6 +2,7 @@
 #include "internal/element.h"
 #include "layouts/none.h"
 #include "layouts/center.h"
+#include "layouts/mosaic.h"
 
 
 int gkit_layout_element_width(GKitElement element, struct GKitViewport *viewport)
@@ -16,6 +17,9 @@ int gkit_layout_element_width(GKitElement element, struct GKitViewport *viewport
 
         case GKIT_LAYOUT_CENTER:
             return gkit_layout_center_element_width(element, viewport);
+
+        case GKIT_LAYOUT_MOSAIC:
+            return gkit_layout_mosaic_element_width(element, viewport);
     }
 
     return 0;
@@ -33,6 +37,9 @@ int gkit_layout_element_height(GKitElement element, struct GKitViewport *viewpor
 
         case GKIT_LAYOUT_CENTER:
             return gkit_layout_center_element_height(element, viewport);
+
+        case GKIT_LAYOUT_MOSAIC:
+            return gkit_layout_mosaic_element_height(element, viewport);
     }
 
     return 0;
@@ -51,6 +58,9 @@ int gkit_layout_element_left(struct GKitElement *element, struct GKitViewport *v
 
         case GKIT_LAYOUT_CENTER:
             return gkit_layout_center_element_left(element, viewport);
+
+        case GKIT_LAYOUT_MOSAIC:
+            return gkit_layout_mosaic_element_left(element, viewport);
     }
 
     return 0;
@@ -68,6 +78,9 @@ int gkit_layout_element_right(struct GKitElement *element, struct GKitViewport *
 
         case GKIT_LAYOUT_CENTER:
             return gkit_layout_center_element_right(element, viewport);
+
+        case GKIT_LAYOUT_MOSAIC:
+            return gkit_layout_mosaic_element_right(element, viewport);
     }
 
     return 0;
@@ -85,6 +98,9 @@ int gkit_layout_element_top(struct GKitElement *element, struct GKitViewport *vi
 
         case GKIT_LAYOUT_CENTER:
             return gkit_layout_center_element_top(element, viewport);
+
+        case GKIT_LAYOUT_MOSAIC:
+            return gkit_layout_mosaic_element_top(element, viewport);
     }
 
     return 0;
@@ -102,6 +118,9 @@ int gkit_layout_element_bottom(struct GKitElement *element, struct GKitViewport 
 
         case GKIT_LAYOUT_CENTER:
             return gkit_layout_center_element_bottom(element, viewport);
+
+        case GKIT_LAYOUT_MOSAIC:
+            return gkit_layout_mosaic_element_bottom(element, viewport);
     }
 
     return 0;

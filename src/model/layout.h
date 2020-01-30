@@ -29,7 +29,7 @@ enum GKitOverflow {
 struct GKitValue {
     union {
         float percentage;
-        unsigned int pixels;
+        int pixels;
     } value;
     enum GKitUnit unit;
 };
@@ -37,6 +37,7 @@ struct GKitValue {
 enum GKitLayoutType {
     GKIT_LAYOUT_NONE,
     GKIT_LAYOUT_CENTER,
+    GKIT_LAYOUT_MOSAIC,
 };
 
 struct GKitLayout {

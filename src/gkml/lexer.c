@@ -450,7 +450,7 @@ struct GkmlToken gkml_lexer_consume(struct GkmlLexer *lexer)
             do {
                 char dc[] = { peek_at(lexer, digits), '\0' };
 
-                if (is_number(dc[0]) || fl_cstring_find("abcdefABCDEF", dc))
+                if (dc[0] && (is_number(dc[0]) || fl_cstring_find("abcdefABCDEF", dc)))
                     digits++;
                 else break;
 
@@ -458,6 +458,8 @@ struct GkmlToken gkml_lexer_consume(struct GkmlLexer *lexer)
 
             if (digits > 0)
                 return create_token(lexer, GKML_TOKEN_HEX, digits);
+
+            // Continue to process the token as "unknown"
         }
         else if (is_number(c))
         {

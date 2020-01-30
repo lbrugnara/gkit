@@ -30,6 +30,7 @@ static struct GkmlNode* parse_integer_literal(struct GkmlParser *parser, struct 
 
     // This is the integer parsing logic (unsigned integers in base 10 by now)
     char *endptr;
+    errno = 0;
     unsigned long long temp_int = strtoull((const char*)temp_token.value.sequence, &endptr, 10);
     
     // The token length must be equals to the parsed number
